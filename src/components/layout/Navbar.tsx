@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Book, Menu, Search, Sunset, Trees, Zap } from "lucide-react";
 
 import {
@@ -59,10 +60,10 @@ interface Navbar1Props {
 
 const Navbar = ({
   logo = {
-    url: "https://www.shadcnblocks.com",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+    url: "/",
+    src: "/logo.png",
     alt: "logo",
-    title: "Shadcnblocks.com",
+    title: "LMS",
   },
   menu = [
     { title: "Home", url: "/" },
@@ -111,22 +112,27 @@ const Navbar = ({
   },
   className,
 }: Navbar1Props) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <section className={cn("py-4", className)}>
+    <section className={cn("py-1 fixed w-full top-0 z-50 transition-all duration-300", isScrolled ? "bg-white shadow-sm dark:bg-gray-950/90 backdrop-blur-md" : "bg-transparent", className)}> 
       <div className="container mx-auto">
-        {/* Desktop Menu */}
         <nav className="hidden items-center lg:flex justify-between">
           <div className="flex items-center gap-6">
-            {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
-                className="max-h-8 dark:invert"
+                className="h-20 dark:invert"
                 alt={logo.alt}
               />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
-              </span>
             </a>
           </div>
           <div className="flex items-center">
