@@ -3,6 +3,10 @@ import { Button } from "../components/ui/button";
 import Banner from "@/components/modules/homePage/Banner";
 import Categories from "@/components/modules/homePage/Categories";
 import MostReadedBooks from "@/components/modules/homePage/MostReadedBooks";
+import MembershipPlan from "@/components/modules/homePage/MembershipPlan";
+import Statistics from "@/components/modules/homePage/Statistics";
+import Testimonial from "@/components/modules/homePage/Testimonial";
+import Cta from "@/components/modules/homePage/Cta";
 
 export default function Home() {
   return (
@@ -11,6 +15,10 @@ export default function Home() {
         <Banner />
         <Categories />
         <MostReadedBooks />
+        <Statistics />
+        <MembershipPlan />
+        <Testimonial />
+        <Cta />
       </main>
     </div>
   );

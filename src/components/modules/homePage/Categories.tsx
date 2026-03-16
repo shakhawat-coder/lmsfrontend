@@ -3,9 +3,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import CategoryCard from '@/components/commonComponents/CategoryCard';
+import CategoryCard, { Category } from '@/components/commonComponents/CategoryCard';
 
-const categories = [
+const categories: Category[] = [
     {
         id: 1,
         name: "Fiction",

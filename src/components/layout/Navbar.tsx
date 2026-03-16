@@ -72,10 +72,10 @@ const Navbar = ({
       url: "/catalog",
       items: [
         {
-          title: "Search Books",
-          description: "Find books by title, author, or ISBN",
+          title: "All Books",
+          description:"Explore all exclusive books",
           icon: <Book className="size-5 shrink-0" />,
-          url: "/catalog/search",
+          url: "/catalog/all",
         },
         {
           title: "Browse Categories",

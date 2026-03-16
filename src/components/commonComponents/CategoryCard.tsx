@@ -4,17 +4,19 @@ import React from 'react';
 import { motion, Variants } from 'motion/react';
 import Link from 'next/link';
 
-interface CategoryProps {
-    category: {
-        id: number;
-        name: string;
-        bookCount: number;
-        image: string;
-    };
+export interface Category {
+    id: number;
+    name: string;
+    bookCount: number;
+    image: string;
+}
+
+export interface CategoryCardProps {
+    category: Category;
     variants?: Variants;
 }
 
-const CategoryCard = ({ category, variants }: CategoryProps) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ category, variants }) => {
     return (
         <motion.div variants={variants}>
             <Link
