@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { Book, Menu, Search, Sunset, Trees, Zap } from "lucide-react";
 
 import {
@@ -27,6 +28,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface MenuItem {
   title: string;
@@ -66,14 +68,17 @@ const Navbar = ({
     title: "LMS",
   },
   menu = [
-    { title: "Home", url: "/" },
+    {
+      title: "Home",
+      url: "/"
+    },
     {
       title: "Catalog",
       url: "/catalog",
       items: [
         {
           title: "All Books",
-          description:"Explore all exclusive books",
+          description: "Explore all exclusive books",
           icon: <Book className="size-5 shrink-0" />,
           url: "/catalog/all",
         },
@@ -107,11 +112,13 @@ const Navbar = ({
     },
   ],
   auth = {
-    login: { title: "Login", url: "#" },
-    signup: { title: "Sign up", url: "#" },
+    login: { title: "Login", url: "/login" },
+    signup: { title: "Sign up", url: "/signup" },
   },
   className,
 }: Navbar1Props) => {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -123,17 +130,25 @@ const Navbar = ({
   }, []);
 
   return (
-    <section className={cn("py-1 fixed w-full top-0 z-50 transition-all duration-300", isScrolled ? "bg-white shadow-sm dark:bg-gray-950/90 backdrop-blur-md" : "bg-transparent", className)}> 
-      <div className="container mx-auto">
+    <section
+      className={cn(
+        "w-full z-50 transition-all duration-300",
+        isHome ? "fixed top-0" : "sticky top-0 bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800",
+        isHome && isScrolled ? "bg-white/90 backdrop-blur-md shadow-sm dark:bg-gray-950/90 py-1" :
+          isHome && !isScrolled ? "bg-transparent py-3" : "py-1",
+        className
+      )}
+    >
+      <div className="container mx-auto px-4">
         <nav className="hidden items-center lg:flex justify-between">
           <div className="flex items-center gap-6">
-            <a href={logo.url} className="flex items-center gap-2">
+            <Link href={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
                 className="h-20 dark:invert"
                 alt={logo.alt}
               />
-            </a>
+            </Link>
           </div>
           <div className="flex items-center">
             <NavigationMenu>
@@ -150,10 +165,10 @@ const Navbar = ({
               </Button>
             </form>
             <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
+              <Link href={auth.login.url}>{auth.login.title}</Link>
             </Button>
             <Button asChild size="sm">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
+              <Link href={auth.signup.url}>{auth.signup.title}</Link>
             </Button>
           </div>
         </nav>
@@ -162,13 +177,13 @@ const Navbar = ({
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
+            <Link href={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
                 className="max-h-8 dark:invert"
                 alt={logo.alt}
               />
-            </a>
+            </Link>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -178,13 +193,13 @@ const Navbar = ({
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
+                    <Link href={logo.url} className="flex items-center gap-2">
                       <img
                         src={logo.src}
                         className="max-h-8 dark:invert"
                         alt={logo.alt}
                       />
-                    </a>
+                    </Link>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
@@ -204,10 +219,10 @@ const Navbar = ({
 
                   <div className="flex flex-col gap-3">
                     <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
+                      <Link href={auth.login.url}>{auth.login.title}</Link>
                     </Button>
                     <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
+                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
                     </Button>
                   </div>
                 </div>
@@ -238,11 +253,13 @@ const renderMenuItem = (item: MenuItem) => {
 
   return (
     <NavigationMenuItem key={item.title}>
-      <NavigationMenuLink
-        href={item.url}
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
-      >
-        {item.title}
+      <NavigationMenuLink asChild>
+        <Link
+          href={item.url}
+          className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
+        >
+          {item.title}
+        </Link>
       </NavigationMenuLink>
     </NavigationMenuItem>
   );
@@ -265,17 +282,25 @@ const renderMobileMenuItem = (item: MenuItem) => {
   }
 
   return (
-    <a key={item.title} href={item.url} className="text-md font-semibold">
+    <Link key={item.title} href={item.url} className="text-md font-semibold">
       {item.title}
-    </a>
+    </Link>
   );
 };
 
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
+const SubMenuLink = React.forwardRef<
+  HTMLAnchorElement,
+  { item: MenuItem; className?: string }
+>(({ item, className, ...props }, ref) => {
   return (
-    <a
-      className="flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
+    <Link
+      ref={ref}
+      className={cn(
+        "flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground",
+        className
+      )}
       href={item.url}
+      {...props}
     >
       <div className="text-foreground">{item.icon}</div>
       <div>
@@ -286,8 +311,9 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
           </p>
         )}
       </div>
-    </a>
+    </Link>
   );
-};
+});
+SubMenuLink.displayName = "SubMenuLink";
 
 export { Navbar };
