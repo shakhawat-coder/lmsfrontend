@@ -103,12 +103,12 @@ const Navbar = ({
       ],
     },
     {
-      title: "Services",
-      url: "/services",
-    },
-    {
       title: "About Us",
       url: "/about",
+    },
+    {
+      title: "Contact",
+      url: "/contact",
     },
   ],
   auth = {

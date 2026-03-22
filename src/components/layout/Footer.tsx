@@ -28,10 +28,10 @@ interface Footer2Props {
 
 const Footer = ({
   logo = {
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/block-1.svg",
-    alt: "blocks for shadcn/ui",
-    title: "Shadcnblocks.com",
-    url: "https://www.shadcnblocks.com",
+    src: "/logo.png",
+    alt: "BookNest",
+    title: "BookNest",
+    url: "/",
   },
   className,
   tagline = "Your gateway to knowledge and discovery.",
@@ -95,12 +95,11 @@ const Footer = ({
                     src={logo.src}
                     alt={logo.alt}
                     title={logo.title}
-                    className="h-10 dark:invert"
+                    className="h-20 dark:invert"
                   />
-                  <LogoText className="text-xl">{logo.title}</LogoText>
-                </Logo>
+                   </Logo>
               </div>
-              <p className="mt-4 font-bold">{tagline}</p>
+              <p className="mt-10">{tagline}</p>
             </div>
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
