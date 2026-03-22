@@ -80,7 +80,7 @@ const Navbar = ({
           title: "All Books",
           description: "Explore all exclusive books",
           icon: <Book className="size-5 shrink-0" />,
-          url: "/catalog/all",
+          url: "/catalog/book",
         },
         {
           title: "Browse Categories",

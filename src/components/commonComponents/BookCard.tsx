@@ -3,15 +3,8 @@
 import React from 'react';
 import { motion, Variants } from 'motion/react';
 import { BookOpen, User, Tag, CheckCircle, XCircle } from 'lucide-react';
-
-export interface Book {
-    id: number;
-    title: string;
-    author: string;
-    category: string;
-    availability: boolean;
-    coverImage: string;
-}
+import Link from 'next/link';
+import { Book } from '@/lib/mockData';
 
 export interface BookCardProps {
     book: Book;
@@ -25,7 +18,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, variants }) => {
             className="group flex flex-col bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl border border-gray-100 dark:border-gray-800 transition-all duration-300 h-full"
         >
             {/* Book Cover Container */}
-            <div className="relative h-48 xs:h-60 sm:h-72 md:h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
+            <Link href={`/catalog/book/${book.id}`} className="block relative h-48 xs:h-60 sm:h-72 md:h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
                     style={{ backgroundImage: `url(${book.coverImage})` }}
@@ -37,16 +30,18 @@ const BookCard: React.FC<BookCardProps> = ({ book, variants }) => {
                     <span className={`inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold rounded-full backdrop-blur-md shadow-sm ${book.availability ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'}`}>
                         {book.availability ? <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" /> : <XCircle className="w-3 h-3 sm:w-4 sm:h-4" />}
                         <span className="hidden xs:inline">{book.availability ? 'Available' : 'Borrowed'}</span>
-                        <span className="xs:hidden">{book.availability ? 'In' : 'Out'}</span>
+                        <span className="xs:hidden">{book.availability ? 'Available' : 'Borrowed'}</span>
                     </span>
                 </div>
-            </div>
+            </Link>
             
             {/* Book Info */}
             <div className="p-3 sm:p-4 md:p-6 flex flex-col flex-grow">
-                <h3 className="text-sm sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 md:mb-3 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {book.title}
-                </h3>
+                <Link href={`/catalog/book/${book.id}`}>
+                    <h3 className="text-sm sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 md:mb-3 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {book.title}
+                    </h3>
+                </Link>
                 
                 <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4 md:mb-6">
                     <div className="flex items-center text-gray-600 dark:text-gray-400 text-[10px] sm:text-xs md:text-sm font-medium">
@@ -79,3 +74,4 @@ const BookCard: React.FC<BookCardProps> = ({ book, variants }) => {
 };
 
 export default BookCard;
+

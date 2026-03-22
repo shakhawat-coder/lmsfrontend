@@ -1,82 +1,9 @@
 import React from 'react';
-import BookCard, { Book } from '@/components/commonComponents/BookCard';
+import BookCard from '@/components/commonComponents/BookCard';
 import CatalogSidebar from '../../../../components/modules/bookPage/CatalogSidebar';
 import Pagination from '../../../../components/modules/bookPage/Pagination';
+import { mockBooks } from '@/lib/mockData';
 
-const mockBooks: Book[] = [
-    {
-        id: 1,
-        title: "The Great Gatsby",
-        author: "F. Scott Fitzgerald",
-        category: "Fiction",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 2,
-        title: "Clean Code",
-        author: "Robert C. Martin",
-        category: "Technology",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 3,
-        title: "1984",
-        author: "George Orwell",
-        category: "Fiction",
-        availability: false,
-        coverImage: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 4,
-        title: "Sapiens: A Brief History of Humankind",
-        author: "Yuval Noah Harari",
-        category: "History",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 5,
-        title: "A Brief History of Time",
-        author: "Stephen Hawking",
-        category: "Science",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 6,
-        title: "Harry Potter and the Sorcerer's Stone",
-        author: "J.K. Rowling",
-        category: "Fiction",
-        availability: false,
-        coverImage: "https://images.unsplash.com/photo-1626618012641-bfbca5a31239?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 7,
-        title: "Rich Dad Poor Dad",
-        author: "Robert Kiyosaki",
-        category: "Non-Fiction",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 8,
-        title: "Steve Jobs",
-        author: "Walter Isaacson",
-        category: "Biography",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 9,
-        title: "Design Patterns",
-        author: "Erich Gamma",
-        category: "Technology",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1513001900722-370f803f498d?auto=format&fit=crop&q=80&w=800",
-    }
-];
 
 const AllBooksPage = () => {
     return (

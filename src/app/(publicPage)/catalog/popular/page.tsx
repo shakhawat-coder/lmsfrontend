@@ -1,77 +1,13 @@
 "use client";
 
 import React from 'react';
-import BookCard, { Book } from '@/components/commonComponents/BookCard';
+import BookCard from '@/components/commonComponents/BookCard';
 import { Flame } from 'lucide-react';
-
-const popularBooks: Book[] = [
-    {
-        id: 201,
-        title: "Clean Code",
-        author: "Robert C. Martin",
-        category: "Technology",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 202,
-        title: "The Alchemist",
-        author: "Paulo Coelho",
-        category: "Fiction",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 203,
-        title: "Sapiens",
-        author: "Yuval Noah Harari",
-        category: "History",
-        availability: false,
-        coverImage: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 204,
-        title: "The Pragmatic Programmer",
-        author: "Andrew Hunt",
-        category: "Technology",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 205,
-        title: "Dune",
-        author: "Frank Herbert",
-        category: "Sci-Fi",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 206,
-        title: "The Psychology of Money",
-        author: "Morgan Housel",
-        category: "Finance",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 207,
-        title: "Deep Work",
-        author: "Cal Newport",
-        category: "Productivity",
-        availability: false,
-        coverImage: "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 208,
-        title: "Man's Search for Meaning",
-        author: "Viktor Frankl",
-        category: "Psychology",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800",
-    }
-];
+import { mockBooks } from '@/lib/mockData';
 
 const PopularPage = () => {
+    const popularBooks = mockBooks.filter(book => book.id >= 201 && book.id <= 208);
+
     return (
         <div className="container mx-auto px-4 py-12 lg:py-20 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}

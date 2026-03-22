@@ -1,61 +1,11 @@
-"use client";
-
 import React from 'react';
-import BookCard, { Book } from '@/components/commonComponents/BookCard';
+import BookCard from '@/components/commonComponents/BookCard';
 import { Sparkles } from 'lucide-react';
-
-const newArrivals: Book[] = [
-    {
-        id: 101,
-        title: "The Midnight Library",
-        author: "Matt Haig",
-        category: "Fiction",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 102,
-        title: "Atomic Habits",
-        author: "James Clear",
-        category: "Self-Help",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 103,
-        title: "Project Hail Mary",
-        author: "Andy Weir",
-        category: "Sci-Fi",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 104,
-        title: "Klara and the Sun",
-        author: "Kazuo Ishiguro",
-        category: "Fiction",
-        availability: false,
-        coverImage: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 105,
-        title: "Think Again",
-        author: "Adam Grant",
-        category: "Psychology",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 106,
-        title: "Malibu Rising",
-        author: "Taylor Jenkins Reid",
-        category: "Fiction",
-        availability: true,
-        coverImage: "https://images.unsplash.com/photo-1626618012641-bfbca5a31239?auto=format&fit=crop&q=80&w=800",
-    }
-];
+import { mockBooks } from '@/lib/mockData';
 
 const NewArrivalsPage = () => {
+    const newArrivals = mockBooks.filter(book => book.id >= 101 && book.id <= 106);
+
     return (
         <div className="container mx-auto px-4 py-12 lg:py-20 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
