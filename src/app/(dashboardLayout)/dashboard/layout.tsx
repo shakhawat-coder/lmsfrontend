@@ -7,6 +7,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/co
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { RoleProxy } from "../../../../proxy";
 
 export default function DashboardLayout({
   children,
@@ -49,7 +50,9 @@ export default function DashboardLayout({
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <div className="p-6">{children}</div>
+        <div className="p-6">
+          <RoleProxy>{children}</RoleProxy>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

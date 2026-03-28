@@ -18,7 +18,24 @@ export interface Category {
     id: string;
     name: string;
     image?: string;
-    books?: any[];
+    books?: Book[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Book {
+    id: string;
+    title: string;
+    author: string;
+    coverImage?: string;
+    availability: boolean;
+    isbn?: string;
+    language?: string;
+    year?: string;
+    pages?: number;
+    description?: string;
+    categoryId: string;
+    category?: Category;
     createdAt: string;
     updatedAt: string;
 }
@@ -165,6 +182,43 @@ export const userApi = {
         return fetchApi<User>('/api/v1/users/create-admin', {
             method: 'POST',
             body: JSON.stringify(adminData),
+        });
+    }
+};
+
+/**
+ * Book API Endpoints
+ */
+export const bookApi = {
+    getAll: async () => {
+        return fetchApi<Book[]>('/api/v1/books', {
+            method: 'GET',
+        });
+    },
+
+    getById: async (id: string) => {
+        return fetchApi<Book>(`/api/v1/books/${id}`, {
+            method: 'GET',
+        });
+    },
+
+    create: async (formData: FormData) => {
+        return fetchApi<Book>('/api/v1/books', {
+            method: 'POST',
+            body: formData,
+        });
+    },
+
+    update: async (id: string, data: any) => {
+        return fetchApi<Book>(`/api/v1/books/${id}`, {
+            method: 'PATCH',
+            body: data instanceof FormData ? data : JSON.stringify(data),
+        });
+    },
+
+    delete: async (id: string) => {
+        return fetchApi<{ success: boolean }>(`/api/v1/books/${id}`, {
+            method: 'DELETE',
         });
     }
 };
