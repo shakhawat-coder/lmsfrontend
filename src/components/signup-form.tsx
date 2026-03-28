@@ -20,7 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { authApi } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const signupSchema = z
   .object({
@@ -45,6 +47,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof SignupFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -76,10 +80,20 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       return;
     }
 
-    // Simulate API call
-    console.log("Signup submitted:", result.data);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
+    // API call
+    try {
+      setApiError(null);
+      const { confirmPassword, ...signupData } = result.data;
+      await authApi.signUp(signupData);
+      
+      // Successfully signed up - Better Auth sends verification email
+      // We might want to redirect to a 'verification-sent' page or login
+      router.push("/login?message=Account created! Please check your email to verify.");
+    } catch (error: any) {
+      setApiError(error.message || "Failed to create account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -92,6 +106,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
+          {apiError && (
+            <div className="mb-4 flex items-center gap-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              <p>{apiError}</p>
+            </div>
+          )}
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>

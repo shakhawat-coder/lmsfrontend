@@ -65,7 +65,7 @@ const MembershipPlan = () => {
   return (
     <section className="py-20 bg-gray-50 overflow-hidden">
       <div className="container mx-auto px-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -80,16 +80,15 @@ const MembershipPlan = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-center">
           {plans.map((plan, index) => (
-            <motion.div 
-              key={plan.name} 
+            <motion.div
+              key={plan.name}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               whileHover={{ y: -10 }}
-              className={`relative bg-white rounded-2xl border ${
-                plan.popular ? 'border-blue-600 shadow-2xl z-10 md:scale-105' : 'border-gray-200 shadow-sm'
-              } p-8 flex flex-col h-full`}
+              className={`relative bg-white rounded-2xl border ${plan.popular ? 'border-blue-600 shadow-2xl z-10 md:scale-105' : 'border-gray-200 shadow-sm'
+                } p-8 flex flex-col h-full`}
             >
               {plan.popular && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -98,17 +97,17 @@ const MembershipPlan = () => {
                   </span>
                 </div>
               )}
-              
+
               <div className="mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <p className="text-gray-600 h-12">{plan.description}</p>
               </div>
-              
+
               <div className="mb-6">
                 <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
                 <span className="text-gray-500 font-medium">{plan.interval}</span>
               </div>
-              
+
               <ul className="mb-8 flex-1 space-y-4">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start">
@@ -117,13 +116,12 @@ const MembershipPlan = () => {
                   </li>
                 ))}
               </ul>
-              
-              <button 
-                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
-                  plan.popular 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg' 
+
+              <button
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${plan.popular
+                    ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'
                     : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-                }`}
+                  }`}
               >
                 {plan.buttonText}
               </button>

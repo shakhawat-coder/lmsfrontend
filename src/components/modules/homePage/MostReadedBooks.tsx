@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import BookCard, { Book } from '@/components/commonComponents/BookCard';
+import BookCard from '@/components/commonComponents/BookCard';
+import { Book } from '@/lib/mockData';
 
 const booksData: Book[] = [
     {

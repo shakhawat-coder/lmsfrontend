@@ -3,16 +3,16 @@
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { 
-    BookOpen, 
-    User, 
-    Tag, 
-    CheckCircle, 
-    XCircle, 
-    ArrowLeft, 
-    Calendar, 
-    Hash, 
-    Globe, 
+import {
+    BookOpen,
+    User,
+    Tag,
+    CheckCircle,
+    XCircle,
+    ArrowLeft,
+    Calendar,
+    Hash,
+    Globe,
     Info,
     Heart,
     Share2,
@@ -28,9 +28,9 @@ const BookDetailsPage = () => {
     const { id } = useParams();
     const router = useRouter();
     const bookId = Number(id);
-    
+
     const book = mockBooks.find(b => b.id === bookId);
-    
+
     if (!book) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center px-4">
@@ -58,22 +58,22 @@ const BookDetailsPage = () => {
                 <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
                     {/* Left Column: Image & Quick Actions */}
                     <div className="lg:col-span-5 xl:col-span-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
                             className="relative group"
                         >
                             {/* Glass background effect */}
-                            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 blur-2xl rounded-[3rem] -z-10" />
-                            
-                            <div className="aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100 dark:border-white/10 relative">
-                                <img 
-                                    src={book.coverImage} 
+                            <div className="absolute -inset-4 bg-linear-to-tr from-blue-500/10 to-purple-500/10 blur-2xl rounded-[3rem] -z-10" />
+
+                            <div className="aspect-3/4 rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100 dark:border-white/10 relative">
+                                <img
+                                    src={book.coverImage}
                                     alt={book.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
-                                
+
                                 {/* Availability Badge Overlay */}
                                 <div className="absolute top-6 left-6">
                                     <span className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-full backdrop-blur-md shadow-lg ${book.availability ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'}`}>
@@ -154,14 +154,13 @@ const BookDetailsPage = () => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <Button 
-                                    size="lg" 
+                                <Button
+                                    size="lg"
                                     disabled={!book.availability}
-                                    className={`h-16 px-10 text-lg font-bold rounded-2xl flex-1 shadow-xl transition-all ${
-                                        book.availability 
-                                        ? 'bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98]' 
+                                    className={`h-16 px-10 text-lg font-bold rounded-2xl flex-1 shadow-xl transition-all ${book.availability
+                                        ? 'bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98]'
                                         : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    }`}
+                                        }`}
                                 >
                                     <BookOpen className="w-6 h-6 mr-3" />
                                     {book.availability ? 'Borrow This Book' : 'Currently Unavailable'}
@@ -187,8 +186,8 @@ const BookDetailsPage = () => {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                             {relatedBooks.map((relatedBook, idx) => (
-                                <BookCard 
-                                    key={relatedBook.id} 
+                                <BookCard
+                                    key={relatedBook.id}
                                     book={relatedBook}
                                     variants={{
                                         hidden: { opacity: 0, y: 20 },

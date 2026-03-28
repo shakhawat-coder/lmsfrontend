@@ -2,7 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { Book, Menu, Search, Sunset, Trees, Zap } from "lucide-react";
+import { Book, Menu, Search, Sunset, Trees, Zap, User, LogOut, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
+import { useRouter } from "next/navigation";
 
 import {
   Accordion,
@@ -118,8 +120,22 @@ const Navbar = ({
   className,
 }: Navbar1Props) => {
   const pathname = usePathname();
+  const router = useRouter();
   const isHome = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user, isLoading, logout: authLogout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await authLogout();
+      setIsDropdownOpen(false);
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -157,20 +173,64 @@ const Navbar = ({
               </NavigationMenuList>
             </NavigationMenu>
           </div>
-          <div className="flex gap-2">
-            <form className="relative">
-              <Input placeholder="Search books..." className="pr-8" />
-              <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
-            <Button asChild variant="outline" size="sm">
-              <Link href={auth.login.url}>{auth.login.title}</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href={auth.signup.url}>{auth.signup.title}</Link>
-            </Button>
-          </div>
+            <div className="flex items-center gap-2">
+              <form className="relative mr-2">
+                <Input placeholder="Search books..." className="pr-8" />
+                <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </form>
+
+              {isLoading ? (
+                <div className="h-8 w-20 animate-pulse rounded-md bg-muted"></div>
+              ) : user ? (
+                <div className="relative">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex items-center gap-2 hover:bg-transparent"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      {user.name?.charAt(0) || <User className="h-4 w-4" />}
+                    </div>
+                  </Button>
+
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1 shadow-lg z-[100]">
+                      <Button asChild variant="ghost" className="w-full justify-start gap-2" size="sm" onClick={() => setIsDropdownOpen(false)}>
+                        <Link href="/dashboard">
+                          <LayoutDashboard className="h-4 w-4" />
+                          Dashboard
+                        </Link>
+                      </Button>
+                      <div className="my-1 h-px bg-muted" />
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10" 
+                        size="sm"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          handleLogout();
+                        }}
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={auth.login.url}>{auth.login.title}</Link>
+                  </Button>
+                  <Button asChild size="sm">
+                    <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                  </Button>
+                </>
+              )}
+            </div>
         </nav>
 
         {/* Mobile Menu */}
@@ -218,12 +278,44 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <Link href={auth.login.url}>{auth.login.title}</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                    </Button>
+                    {isLoading ? (
+                      <div className="h-10 w-full animate-pulse rounded-md bg-muted"></div>
+                    ) : user ? (
+                      <>
+                        <div className="flex items-center gap-3 rounded-md bg-muted p-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            {user.name?.charAt(0) || <User className="h-4 w-4" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold">{user.name}</p>
+                            <p className="text-xs text-muted-foreground">{user.email}</p>
+                          </div>
+                        </div>
+                        <Button asChild variant="outline" className="justify-start gap-2">
+                          <Link href="/dashboard">
+                            <LayoutDashboard className="h-4 w-4" />
+                            Dashboard
+                          </Link>
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          className="justify-start gap-2"
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Logout
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button asChild variant="outline">
+                          <Link href={auth.login.url}>{auth.login.title}</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

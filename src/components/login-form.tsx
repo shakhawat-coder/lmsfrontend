@@ -20,7 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle, Info } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { authApi } from "@/lib/api";
+import { useAuth } from "@/providers/auth-provider";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -39,6 +42,11 @@ export function LoginForm({
   });
   const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const router = useRouter();
+  const { refreshSession } = useAuth();
+  const searchParams = useSearchParams();
+  const message = searchParams.get("message");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -70,10 +78,22 @@ export function LoginForm({
       return;
     }
 
-    // Simulate API call
-    console.log("Login submitted:", result.data);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
+    // API call
+    try {
+      setApiError(null);
+      await authApi.login(result.data);
+      
+      // Update global auth state immediately
+      await refreshSession();
+      
+      // Successfully logged in
+      router.push("/");
+      router.refresh();
+    } catch (error: any) {
+      setApiError(error.message || "Invalid email or password.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -87,6 +107,18 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
+            {message && (
+              <div className="mb-4 flex items-center gap-2 rounded-md bg-blue-500/15 p-3 text-sm text-blue-500">
+                <Info className="h-4 w-4" />
+                <p>{message}</p>
+              </div>
+            )}
+            {apiError && (
+              <div className="mb-4 flex items-center gap-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4" />
+                <p>{apiError}</p>
+              </div>
+            )}
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
