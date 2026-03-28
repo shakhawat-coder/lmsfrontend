@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { categoryApi, Category } from "@/lib/api";
 import { 
   Table, 
@@ -12,7 +12,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit2Icon, Trash2Icon, PlusIcon, Loader2Icon } from "lucide-react";
+import { Edit2Icon, Trash2Icon, PlusIcon, Loader2Icon, LayersIcon, BookOpenIcon, CheckCircle2Icon } from "lucide-react";
 import Link from "next/link";
 import { 
   AlertDialog, 
@@ -25,7 +25,9 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from "@/components/ui/alert-dialog";
-import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "motion/react";
+import { Badge } from "@/components/ui/badge";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -46,6 +48,18 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
+  const stats = useMemo(() => {
+    const total = categories.length;
+    const withBooks = categories.filter(c => (c as any).books?.length > 0).length;
+    const totalBooks = categories.reduce((acc, curr) => acc + ((curr as any).books?.length || 0), 0);
+    return [
+      { title: "Total Categories", value: total, icon: LayersIcon, color: "text-amber-500", bg: "bg-amber-500/10" },
+      { title: "With Books", value: withBooks, icon: CheckCircle2Icon, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+      { title: "Empty Categories", value: total - withBooks, icon: LayersIcon, color: "text-rose-500", bg: "bg-rose-500/10" },
+      { title: "Global Books", value: totalBooks, icon: BookOpenIcon, color: "text-blue-500", bg: "bg-blue-500/10" }
+    ];
+  }, [categories]);
+
   const handleDelete = async (id: string) => {
     try {
       await categoryApi.delete(id);
@@ -56,12 +70,15 @@ export default function CategoriesPage() {
     }
   };
 
-  if (isLoading) return <div className="p-4">Loading categories...</div>;
+  if (isLoading) return <div className="p-4 flex h-64 items-center justify-center text-muted-foreground"><Loader2Icon className="animate-spin mr-2" /> Loading categories...</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Category Management</h1>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Category Management</h1>
+          <p className="text-sm text-muted-foreground">Classify and organize your library books.</p>
+        </div>
         <Button asChild size="sm">
           <Link href="/dashboard/categories/add">
             <PlusIcon className="mr-2 h-4 w-4" /> Add Category
@@ -69,43 +86,70 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <div className="rounded-md border">
+      {/* Summary Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                <div className={`${stat.bg} p-2 rounded-lg`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border shadow-sm bg-card overflow-hidden">
         <Table>
-          <TableCaption>A list of available categories.</TableCaption>
-          <TableHeader>
+          <TableHeader className="bg-muted/20">
             <TableRow>
-              <TableHead className="w-[100px]">Image</TableHead>
+              <TableHead className="w-[100px] pl-6">Image</TableHead>
               <TableHead>Category Name</TableHead>
               <TableHead>Active Books</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right pr-6">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {categories.map((category) => (
-              <TableRow key={category.id}>
-                <TableCell>
-                  <div className="h-10 w-10 overflow-hidden rounded-md border">
+              <TableRow key={category.id} className="group hover:bg-muted/5 transition-colors">
+                <TableCell className="pl-6">
+                  <div className="h-10 w-10 overflow-hidden rounded-lg border bg-muted">
                     <img 
                       src={category.image || "/placeholder.png"} 
                       alt={category.name} 
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
                 </TableCell>
-                <TableCell className="font-medium">{category.name}</TableCell>
-                <TableCell>{(category as any).books?.length || 0}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" asChild>
+                <TableCell className="font-semibold text-foreground/90">{category.name}</TableCell>
+                <TableCell>
+                  <Badge variant="secondary" className="px-3 rounded-full font-bold">
+                    {(category as any).books?.length || 0}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right pr-6">
+                  <div className="flex justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" asChild className="h-8 w-8">
                       <Link href={`/dashboard/categories/edit/${category.id}`}>
-                        <Edit2Icon className="h-4 w-4" />
+                        <Edit2Icon className="h-3.5 w-3.5" />
                       </Link>
                     </Button>
                     
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="group text-destructive">
-                          <Trash2Icon className="h-4 w-4 transition-transform group-hover:scale-110" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
+                          <Trash2Icon className="h-3.5 w-3.5" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="sm:max-w-[425px]">
@@ -113,47 +157,31 @@ export default function CategoriesPage() {
                           <>
                             <AlertDialogHeader>
                               <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-                                <span className="bg-destructive/10 p-2 rounded-full">
-                                  <Trash2Icon className="h-5 w-5" />
-                                </span>
                                 Deletion Restricted
                               </AlertDialogTitle>
-                              <AlertDialogDescription className="pt-2 text-base text-foreground/80">
-                                You cannot delete the category 
-                                <span className="block font-bold mt-2 text-foreground underline decoration-destructive/30 decoration-2 underline-offset-4 tracking-tight text-lg italic">
-                                  "{category.name}"
-                                </span> 
-                                because it currently contains <span className="font-bold text-destructive">{category.books.length}</span> associated book(s).
+                              <AlertDialogDescription className="pt-2 text-base">
+                                You cannot delete <span className="font-bold">"{category.name}"</span> while it contains books.
                               </AlertDialogDescription>
-                              <p className="text-xs text-muted-foreground mt-4 border-l-2 border-primary/20 pl-3 py-1 bg-accent/30 rounded-r-sm">
-                                Tip: Delete or move all books in this category before attempting to delete it.
-                              </p>
                             </AlertDialogHeader>
                             <AlertDialogFooter className="mt-4 border-t border-border/50 pt-4">
-                              <AlertDialogAction className="w-full sm:w-auto h-11 px-8 rounded-lg">
-                                I Understand
-                              </AlertDialogAction>
+                              <AlertDialogAction className="h-10 rounded-lg">I Understand</AlertDialogAction>
                             </AlertDialogFooter>
                           </>
                         ) : (
                           <>
                             <AlertDialogHeader>
-                              <AlertDialogTitle className="text-xl">Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription className="pt-2">
-                                This action is permanent. This will delete the category 
-                                <span className="font-bold text-foreground mx-1">"{category.name}"</span> 
-                                and it cannot be recovered.
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently remove the <span className="font-bold">"{category.name}"</span> category.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter className="mt-6 border-t border-border/50 pt-4">
-                              <AlertDialogCancel className="h-11 px-6 rounded-lg text-foreground hover:bg-accent/60">
-                                Cancel
-                              </AlertDialogCancel>
+                            <AlertDialogFooter className="mt-6 border-t pt-4">
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction 
                                 onClick={() => handleDelete(category.id)}
-                                className="h-11 px-8 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 shadow-lg shadow-destructive/10"
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
-                                Delete Category
+                                Delete
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </>

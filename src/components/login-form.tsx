@@ -47,6 +47,7 @@ export function LoginForm({
   const { refreshSession } = useAuth();
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
+  const redirect = searchParams.get("redirect");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -86,8 +87,9 @@ export function LoginForm({
       // Update global auth state immediately
       await refreshSession();
       
-      // Successfully logged in
-      router.push("/");
+      // Successfully logged in - redirect to specified URL or home
+      const redirectUrl = redirect || "/";
+      router.push(redirectUrl);
       router.refresh();
     } catch (error: any) {
       setApiError(error.message || "Invalid email or password.");

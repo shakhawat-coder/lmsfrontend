@@ -1,10 +1,33 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import BookCard from '@/components/commonComponents/BookCard';
-import { Sparkles } from 'lucide-react';
-import { mockBooks } from '@/lib/mockData';
+import { Sparkles, Loader2Icon } from 'lucide-react';
+import { bookApi, Book } from '@/lib/api';
 
 const NewArrivalsPage = () => {
-    const newArrivals = mockBooks.filter(book => book.id >= 101 && book.id <= 106);
+    const [newArrivals, setNewArrivals] = useState<Book[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchNewArrivals = async () => {
+            try {
+                const data = await bookApi.getAll();
+                const items = Array.isArray(data) ? data : (data as any).data || [];
+                // Sorting by createdAt assuming newer first
+                const sorted = items.sort((a: Book, b: Book) => 
+                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                );
+                setNewArrivals(sorted.slice(0, 8)); // Top 8 new arrivals
+            } catch (error) {
+                console.error("Failed to fetch new arrivals:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchNewArrivals();
+    }, []);
 
     return (
         <div className="container mx-auto px-4 py-12 lg:py-20 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -23,18 +46,28 @@ const NewArrivalsPage = () => {
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-6 sm:gap-8">
-                {newArrivals.map((book, idx) => (
-                    <BookCard 
-                        key={book.id} 
-                        book={book} 
-                        variants={{
-                            hidden: { opacity: 0, y: 20 },
-                            visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
-                        }}
-                    />
-                ))}
-            </div>
+            {isLoading ? (
+                <div className="flex justify-center items-center py-20">
+                    <Loader2Icon className="h-10 w-10 animate-spin text-primary opacity-50" />
+                </div>
+            ) : newArrivals.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                    No new arrivals found.
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-6 sm:gap-8">
+                    {newArrivals.map((book, idx) => (
+                        <BookCard 
+                            key={book.id} 
+                            book={book} 
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

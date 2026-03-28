@@ -66,6 +66,16 @@ export const sidebarLinks: DashboardLink[] = [
       { title: "Add Book", url: "/dashboard/books/add", icon: PlusCircleIcon },
     ]
   },
+  {
+    title: "Memberships",
+    url: "/dashboard/memberships",
+    icon: CreditCardIcon,
+    roles: ["ADMIN", "SUPERADMIN"],
+    items: [
+      { title: "User Memberships", url: "/dashboard/memberships", icon: UsersIcon },
+      { title: "Membership Plans", url: "/dashboard/membership-plans", icon: ListIcon },
+    ]
+  },
 
   // User Specific (Can also have dropdowns if needed)
   {
@@ -76,7 +86,7 @@ export const sidebarLinks: DashboardLink[] = [
   },
   {
     title: "My Memberships",
-    url: "/dashboard/membership",
+    url: "/dashboard/my-membership",
     icon: CreditCardIcon,
     roles: ["USER"],
   },

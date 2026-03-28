@@ -4,12 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'motion/react';
 import Link from 'next/link';
 
-export interface Category {
-    id: number;
-    name: string;
-    bookCount: number;
-    image: string;
-}
+import { Category } from '@/lib/api';
 
 export interface CategoryCardProps {
     category: Category;
@@ -26,7 +21,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, variants }) => {
                 {/* Background Image Image */}
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
-                    style={{ backgroundImage: `url(${category.image})` }}
+                    style={{ backgroundImage: `url(${category.image || 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=2070&auto=format&fit=crop'})` }}
                 />
 
                 {/* Gradient Overlay */}
@@ -42,7 +37,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, variants }) => {
                         </h3>
                         <div className="flex items-center gap-2">
                             <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-blue-600/90 text-white text-sm font-medium backdrop-blur-sm">
-                                {category.bookCount.toLocaleString()} Books
+                                {(category.books?.length || 0).toLocaleString()} Books
                             </span>
                         </div>
                     </motion.div>

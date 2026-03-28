@@ -1,48 +1,11 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight } from 'lucide-react';
-import CategoryCard, { Category } from '@/components/commonComponents/CategoryCard';
-
-const categories: Category[] = [
-    {
-        id: 1,
-        name: "Fiction",
-        bookCount: 1240,
-        image: "/fiction.jpg",
-    },
-    {
-        id: 2,
-        name: "Science & Technology",
-        bookCount: 850,
-        image: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=2070&auto=format&fit=crop",
-    },
-    {
-        id: 3,
-        name: "History & Biography",
-        bookCount: 632,
-        image: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=2074&auto=format&fit=crop",
-    },
-    {
-        id: 4,
-        name: "Arts & Photography",
-        bookCount: 420,
-        image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2080&auto=format&fit=crop",
-    },
-    {
-        id: 5,
-        name: "Business & Finance",
-        bookCount: 512,
-        image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071&auto=format&fit=crop",
-    },
-    {
-        id: 6,
-        name: "Self-Help & Wellness",
-        bookCount: 965,
-        image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=2002&auto=format&fit=crop",
-    }
-];
+import { ArrowRight, Loader2Icon } from 'lucide-react';
+import CategoryCard from '@/components/commonComponents/CategoryCard';
+import { categoryApi, Category } from '@/lib/api';
+import Link from 'next/link';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -65,6 +28,26 @@ const itemVariants = {
 };
 
 const Categories = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await categoryApi.getAll();
+                const items = Array.isArray(data) ? data : (data as any).data || [];
+                // Sort by book count descending if possible, or just limit to top 6
+                setCategories(items.slice(0, 6)); 
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
     return (
         <section className="w-full py-20 bg-gray-50 dark:bg-gray-900 overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
@@ -79,27 +62,33 @@ const Categories = () => {
                     </div>
 
                     <div className="mt-6 md:mt-0">
-                        <button className="group flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+                        <Link href="/catalog" className="group flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                             View All Categories
                             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-100px" }}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-                >
-                    {categories.map((category) => (
-                        <CategoryCard key={category.id} category={category} variants={itemVariants} />
-                    ))}
-                </motion.div>
+                {isLoading ? (
+                    <div className="flex h-40 w-full items-center justify-center">
+                        <Loader2Icon className="h-8 w-8 animate-spin text-primary opacity-50" />
+                    </div>
+                ) : (
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                    >
+                        {categories.map((category) => (
+                            <CategoryCard key={category.id} category={category} variants={itemVariants} />
+                        ))}
+                    </motion.div>
+                )}
             </div>
         </section>
     );
 };
 
-export default Categories;
+export default Categories;

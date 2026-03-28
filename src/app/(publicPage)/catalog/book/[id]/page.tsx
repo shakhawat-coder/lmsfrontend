@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import {
@@ -16,20 +16,88 @@ import {
     Info,
     Heart,
     Share2,
-    BookMarked
+    BookMarked,
+    Loader2Icon
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { mockBooks } from '@/lib/mockData';
+import { bookApi, borrowingApi, Book } from '@/lib/api';
 import BookCard from '@/components/commonComponents/BookCard';
 
 const BookDetailsPage = () => {
     const { id } = useParams();
     const router = useRouter();
-    const bookId = Number(id);
+    const bookId = id as string;
 
-    const book = mockBooks.find(b => b.id === bookId);
+    const [book, setBook] = useState<Book | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [relatedBooks, setRelatedBooks] = useState<Book[]>([]);
+    const [isBorrowing, setIsBorrowing] = useState(false);
+
+    useEffect(() => {
+        // ... unchanged existing effect ...
+        const fetchBookAndRelated = async () => {
+            try {
+                // Fetch the specific book
+                const fetchedBook = await bookApi.getById(bookId);
+                const actualBook = (fetchedBook as any).data || fetchedBook;
+                setBook(actualBook);
+
+                // For related books, we could just fetch all books and filter, or use a specific endpoint
+                const allBooksData = await bookApi.getAll();
+                const allBooks = Array.isArray(allBooksData) ? allBooksData : (allBooksData as any).data || [];
+                
+                // Filter books by same category if possible
+                const related = allBooks
+                    .filter((b: Book) => b.categoryId === actualBook.categoryId && b.id !== actualBook.id)
+                    .slice(0, 3);
+                
+                setRelatedBooks(related);
+            } catch (error) {
+                console.error("Error fetching book:", error);
+                setBook(null);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (bookId) {
+            fetchBookAndRelated();
+        }
+    }, [bookId]);
+
+    const handleBorrow = async () => {
+        if (!book) return;
+        setIsBorrowing(true);
+        try {
+            await borrowingApi.create({ bookId: book.id });
+            alert("Book borrowed successfully! Check your dashboard.");
+            setBook(prev => prev ? { ...prev, availability: false } : prev);
+        } catch (error: any) {
+            console.error(error);
+            const msg = error.message?.toLowerCase() || '';
+            if (msg.includes("unauthorized") || msg.includes("not logged in")) {
+                alert("Please log in to borrow books.");
+                router.push("/auth/sign-in");
+            } else if (msg.includes("active membership")) {
+                alert("You need an active membership to borrow books. Please subscribe to a plan.");
+                router.push("/dashboard/membership-plans");
+            } else {
+                alert(error.message || "Failed to borrow book");
+            }
+        } finally {
+            setIsBorrowing(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <Loader2Icon className="h-12 w-12 animate-spin text-primary opacity-50" />
+            </div>
+        );
+    }
 
     if (!book) {
         return (
@@ -41,16 +109,12 @@ const BookDetailsPage = () => {
                 <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md text-center">
                     The book you are looking for might have been removed or the ID is incorrect.
                 </p>
-                <Button onClick={() => router.push('/catalog/all')} className="rounded-full px-8">
+                <Button onClick={() => router.push('/catalog/book')} className="rounded-full px-8">
                     Back to Catalog
                 </Button>
             </div>
         );
     }
-
-    const relatedBooks = mockBooks
-        .filter(b => b.category === book.category && b.id !== book.id)
-        .slice(0, 3);
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950 py-20">
@@ -69,7 +133,7 @@ const BookDetailsPage = () => {
 
                             <div className="aspect-3/4 rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100 dark:border-white/10 relative">
                                 <img
-                                    src={book.coverImage}
+                                    src={book.coverImage || '/placeholder-book.png'}
                                     alt={book.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
@@ -94,13 +158,8 @@ const BookDetailsPage = () => {
                         >
                             <div className="flex flex-wrap items-center gap-3 mb-6">
                                 <span className="px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
-                                    {book.category}
+                                    {book.category?.name || "Uncategorized"}
                                 </span>
-                                {book.id <= 3 && (
-                                    <span className="px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
-                                        Best Seller
-                                    </span>
-                                )}
                             </div>
 
                             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-[1.1]">
@@ -124,7 +183,7 @@ const BookDetailsPage = () => {
                                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 uppercase font-bold tracking-widest">
                                         <Hash className="w-3 h-3 text-blue-600" /> ISBN
                                     </p>
-                                    <p className="text-base font-bold dark:text-gray-200">{book.isbn || '978-0123456789'}</p>
+                                    <p className="text-base font-bold dark:text-gray-200">{book.isbn || 'N/A'}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 uppercase font-bold tracking-widest">
@@ -136,13 +195,13 @@ const BookDetailsPage = () => {
                                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 uppercase font-bold tracking-widest">
                                         <Calendar className="w-3 h-3 text-blue-600" /> Year
                                     </p>
-                                    <p className="text-base font-bold dark:text-gray-200">{book.year || '2023'}</p>
+                                    <p className="text-base font-bold dark:text-gray-200">{book.year || 'N/A'}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 uppercase font-bold tracking-widest">
                                         <BookOpen className="w-3 h-3 text-blue-600" /> Pages
                                     </p>
-                                    <p className="text-base font-bold dark:text-gray-200">{book.pages || '250'}+</p>
+                                    <p className="text-base font-bold dark:text-gray-200">{book.pages ? `${book.pages}+` : 'N/A'}</p>
                                 </div>
                             </div>
 
@@ -156,14 +215,15 @@ const BookDetailsPage = () => {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Button
                                     size="lg"
-                                    disabled={!book.availability}
+                                    onClick={handleBorrow}
+                                    disabled={!book.availability || isBorrowing}
                                     className={`h-16 px-10 text-lg font-bold rounded-2xl flex-1 shadow-xl transition-all ${book.availability
                                         ? 'bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98]'
-                                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                        : 'bg-gray-200 text-gray-500 cursor-not-allowed hidden' // hidden if not available or just disabled
                                         }`}
                                 >
-                                    <BookOpen className="w-6 h-6 mr-3" />
-                                    {book.availability ? 'Borrow This Book' : 'Currently Unavailable'}
+                                    {isBorrowing ? <Loader2Icon className="w-6 h-6 mr-3 animate-spin" /> : <BookOpen className="w-6 h-6 mr-3" />}
+                                    {isBorrowing ? 'Borrowing...' : book.availability ? 'Borrow This Book' : 'Currently Unavailable'}
                                 </Button>
                                 <Button size="lg" variant="outline" className="h-16 px-10 text-lg font-bold rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-900 transition-all border-2">
                                     Read Preview
@@ -180,7 +240,7 @@ const BookDetailsPage = () => {
                             <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
                                 You Might Also <span className="text-blue-600">Like</span>
                             </h2>
-                            <Link href="/catalog/all" className="text-blue-600 font-bold hover:underline flex items-center gap-1 text-sm">
+                            <Link href="/catalog/book" className="text-blue-600 font-bold hover:underline flex items-center gap-1 text-sm">
                                 View all <ChevronRight className="w-4 h-4" />
                             </Link>
                         </div>

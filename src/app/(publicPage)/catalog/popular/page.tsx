@@ -1,12 +1,30 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BookCard from '@/components/commonComponents/BookCard';
-import { Flame } from 'lucide-react';
-import { mockBooks } from '@/lib/mockData';
+import { Flame, Loader2Icon } from 'lucide-react';
+import { bookApi, Book } from '@/lib/api';
 
 const PopularPage = () => {
-    const popularBooks = mockBooks.filter(book => book.id >= 201 && book.id <= 208);
+    const [popularBooks, setPopularBooks] = useState<Book[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPopularBooks = async () => {
+            try {
+                const data = await bookApi.getAll();
+                const items = Array.isArray(data) ? data : (data as any).data || [];
+                // Without real popularity metrics, we'll just slice the top 8
+                setPopularBooks(items.slice(0, 8)); 
+            } catch (error) {
+                console.error("Failed to fetch popular books:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPopularBooks();
+    }, []);
 
     return (
         <div className="container mx-auto px-4 py-12 lg:py-20 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -25,18 +43,28 @@ const PopularPage = () => {
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-6 sm:gap-8">
-                {popularBooks.map((book, idx) => (
-                    <BookCard 
-                        key={book.id} 
-                        book={book} 
-                        variants={{
-                            hidden: { opacity: 0, y: 20 },
-                            visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
-                        }}
-                    />
-                ))}
-            </div>
+            {isLoading ? (
+                <div className="flex justify-center items-center py-20">
+                    <Loader2Icon className="h-10 w-10 animate-spin text-primary opacity-50" />
+                </div>
+            ) : popularBooks.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                    No popular books found.
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-6 sm:gap-8">
+                    {popularBooks.map((book, idx) => (
+                        <BookCard 
+                            key={book.id} 
+                            book={book} 
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

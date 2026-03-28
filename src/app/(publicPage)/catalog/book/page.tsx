@@ -1,11 +1,32 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import BookCard from '@/components/commonComponents/BookCard';
 import CatalogSidebar from '../../../../components/modules/bookPage/CatalogSidebar';
 import Pagination from '../../../../components/modules/bookPage/Pagination';
-import { mockBooks } from '@/lib/mockData';
-
+import { bookApi, Book } from '@/lib/api';
+import { Loader2Icon } from 'lucide-react';
 
 const AllBooksPage = () => {
+    const [books, setBooks] = useState<Book[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBooks = async () => {
+            try {
+                const data = await bookApi.getAll();
+                const items = Array.isArray(data) ? data : (data as any).data || [];
+                setBooks(items);
+            } catch (error) {
+                console.error("Failed to fetch books:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBooks();
+    }, []);
+
     return (
         <div className="container mx-auto px-4 py-8 lg:py-12 max-w-7xl animate-in fade-in duration-500">
             {/* Header Section */}
@@ -26,7 +47,7 @@ const AllBooksPage = () => {
                 <div className="flex-1 w-full min-w-0">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
                         <p className="text-gray-600 dark:text-gray-400 font-medium">
-                            Showing <span className="text-blue-600 dark:text-blue-400 font-bold">1-{mockBooks.length}</span> of <span className="text-gray-900 dark:text-white font-bold">120</span> results
+                            Showing <span className="text-blue-600 dark:text-blue-400 font-bold">1-{books.length}</span> of <span className="text-gray-900 dark:text-white font-bold">{books.length}</span> results
                         </p>
                         <div className="flex items-center gap-3 w-full sm:w-auto">
                             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 hidden sm:block whitespace-nowrap">Sort by:</span>
@@ -47,22 +68,32 @@ const AllBooksPage = () => {
                     </div>
 
                     {/* Book Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 xs:gap-4 sm:gap-8">
-                        {mockBooks.map((book, idx) => (
-                            <BookCard 
-                                key={book.id} 
-                                book={book} 
-                                variants={{
-                                    hidden: { opacity: 0, y: 20 },
-                                    visible: { opacity: 1, y: 0, transition: { delay: idx * 0.05, duration: 0.4 } }
-                                }}
-                            />
-                        ))}
-                    </div>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-20">
+                            <Loader2Icon className="h-10 w-10 animate-spin text-primary opacity-50" />
+                        </div>
+                    ) : books.length === 0 ? (
+                        <div className="text-center py-20 text-muted-foreground">
+                            No books found.
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 xs:gap-4 sm:gap-8">
+                            {books.map((book, idx) => (
+                                <BookCard 
+                                    key={book.id} 
+                                    book={book} 
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20 },
+                                        visible: { opacity: 1, y: 0, transition: { delay: idx * 0.05, duration: 0.4 } }
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Pagination Bottom */}
                     <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800">
-                        <Pagination currentPage={2} totalPages={6} />
+                        <Pagination currentPage={1} totalPages={1} />
                     </div>
                 </div>
             </div>

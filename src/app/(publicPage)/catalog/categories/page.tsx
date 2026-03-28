@@ -1,60 +1,31 @@
 "use client";
 
-import React from 'react';
-import CategoryCard, { Category } from '@/components/commonComponents/CategoryCard';
-
-const mockCategories: Category[] = [
-    {
-        id: 1,
-        name: "Fiction",
-        bookCount: 1250,
-        image: "https://images.unsplash.com/photo-1474933148563-f9ed4151bc29?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 2,
-        name: "Science",
-        bookCount: 840,
-        image: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 3,
-        name: "Technology",
-        bookCount: 2100,
-        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 4,
-        name: "History",
-        bookCount: 620,
-        image: "https://images.unsplash.com/photo-1447069387593-a5de0862481e?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 5,
-        name: "Biography",
-        bookCount: 450,
-        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 6,
-        name: "Non-Fiction",
-        bookCount: 980,
-        image: "https://images.unsplash.com/photo-1491843351663-7304c9af659c?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 7,
-        name: "Mystery",
-        bookCount: 730,
-        image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-        id: 8,
-        name: "Romance",
-        bookCount: 560,
-        image: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=800",
-    }
-];
+import React, { useEffect, useState } from 'react';
+import CategoryCard from '@/components/commonComponents/CategoryCard';
+import { categoryApi, Category } from '@/lib/api';
+import { Loader2Icon } from 'lucide-react';
+import Link from 'next/link';
 
 const CategoriesPage = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await categoryApi.getAll();
+                const items = Array.isArray(data) ? data : (data as any).data || [];
+                setCategories(items);
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
     return (
         <div className="container mx-auto px-4 py-8 lg:py-16 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header Section */}
@@ -68,18 +39,28 @@ const CategoriesPage = () => {
             </div>
 
             {/* Category Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-                {mockCategories.map((category, idx) => (
-                    <CategoryCard 
-                        key={category.id} 
-                        category={category} 
-                        variants={{
-                            hidden: { opacity: 0, y: 30 },
-                            visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
-                        }}
-                    />
-                ))}
-            </div>
+            {isLoading ? (
+                <div className="flex justify-center items-center py-20">
+                    <Loader2Icon className="h-10 w-10 animate-spin text-primary opacity-50" />
+                </div>
+            ) : categories.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                    No categories found.
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                    {categories.map((category, idx) => (
+                        <CategoryCard 
+                            key={category.id} 
+                            category={category} 
+                            variants={{
+                                hidden: { opacity: 0, y: 30 },
+                                visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Call to Action Section */}
             <div className="mt-20 p-8 sm:p-12 rounded-[2.5rem] bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 text-center relative overflow-hidden">
@@ -96,9 +77,9 @@ const CategoriesPage = () => {
                     <button className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-500/25 hover:scale-105 active:scale-95">
                         Request a Category
                     </button>
-                    <button className="px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold rounded-2xl border border-gray-200 dark:border-gray-700 transition-all shadow-sm hover:scale-105 active:scale-95">
+                    <Link href="/catalog/all" className="px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold rounded-2xl border border-gray-200 dark:border-gray-700 transition-all shadow-sm hover:scale-105 active:scale-95">
                         Browse All Books
-                    </button>
+                    </Link>
                 </div>
             </div>
         </div>

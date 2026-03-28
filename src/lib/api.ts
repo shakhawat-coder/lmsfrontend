@@ -40,6 +40,58 @@ export interface Book {
     updatedAt: string;
 }
 
+export interface Borrowing {
+    id: string;
+    userId: string;
+    user?: User;
+    bookId: string;
+    book?: Book;
+    borrowDate: string;
+    dueDate: string;
+    returnDate?: string;
+    status: 'BORROWED' | 'RETURNED' | 'OVERDUE';
+    fine: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Membership {
+    id: string;
+    userId: string;
+    user?: User;
+    membershipPlanId: string;
+    membershipPlan?: MembershipPlan;
+    status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED';
+    startDate: string;
+    endDate?: string;
+    price: number;
+}
+
+export interface MembershipPlan {
+    id: string;
+    name: "BASIC" | "SILVER" | "GOLD";
+    description: string;
+    price: number;
+    interval: string;
+    features: string[];
+    borrowLimit: number;
+    durationDays: number;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface Payment {
+    id: string;
+    userId: string;
+    amount: number;
+    currency: string;
+    transactionId: string;
+    status: 'PAID' | 'UNPAID';
+    paymentMethod?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 /**
  * Common fetch wrapper for API calls
  */
@@ -63,21 +115,39 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit & { par
         headers.set('Content-Type', 'application/json');
     }
 
-    const response = await fetch(url.toString(), {
-        ...fetchOptions,
-        headers,
-        credentials: 'include', // Important for session cookies
-    });
+    let response;
+    try {
+        response = await fetch(url.toString(), {
+            ...fetchOptions,
+            headers,
+            credentials: 'include', // Important for session cookies
+        });
+    } catch (error) {
+        console.error('Network error:', error);
+        throw new Error('Failed to connect to server. Please check if the backend is running.');
+    }
 
     // Check if empty response (e.g. 204 No Content)
     const textContent = await response.text();
-    const data = textContent ? JSON.parse(textContent) : {};
-
-    if (!response.ok) {
-        throw new Error(data.error?.message || data.message || 'Something went wrong');
+    let data: any = {};
+    
+    if (textContent) {
+        try {
+            data = JSON.parse(textContent);
+        } catch {
+            // If JSON parsing fails, check if it's an error response
+            if (!response.ok) {
+                throw new Error(textContent || 'Something went wrong');
+            }
+            return textContent as unknown as T;
+        }
     }
 
-    return data;
+    if (!response.ok) {
+        throw new Error(data?.error?.message || data?.message || data?.error || 'Something went wrong');
+    }
+
+    return data as T;
 }
 
 /**
@@ -221,4 +291,120 @@ export const bookApi = {
             method: 'DELETE',
         });
     }
+};
+
+/**
+ * Borrowing API Endpoints
+ */
+export const borrowingApi = {
+    getAll: async () => {
+        return fetchApi<Borrowing[]>('/api/v1/borrowings', {
+            method: 'GET',
+        });
+    },
+    
+    getById: async (id: string) => {
+        return fetchApi<Borrowing>(`/api/v1/borrowings/${id}`, {
+            method: 'GET',
+        });
+    },
+
+    create: async (data: { bookId: string; dueDate?: string }) => {
+        return fetchApi<Borrowing>('/api/v1/borrowings', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    getMyBorrowings: async () => {
+        return fetchApi<Borrowing[]>('/api/v1/borrowings/my-borrowings', {
+            method: 'GET',
+        });
+    }
+
+};
+
+/**
+ * Membership API Endpoints
+ */
+export const membershipApi = {
+    getAll: async () => {
+        return fetchApi<Membership[]>('/api/v1/memberships', {
+            method: 'GET',
+        });
+    },
+
+    getActive: async () => {
+        return fetchApi<Membership>('/api/v1/memberships/my-membership', {
+            method: 'GET',
+        });
+    },
+
+    update: async (id: string, data: Partial<Membership>) => {
+        return fetchApi<Membership>(`/api/v1/memberships/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data),
+        });
+    },
+
+    delete: async (id: string) => {
+        return fetchApi<{ success: boolean }>(`/api/v1/memberships/${id}`, {
+            method: 'DELETE',
+        });
+    }
+};
+
+/**
+ * Membership Plan API Endpoints
+ */
+export const membershipPlanApi = {
+    getAll: async () => {
+        return fetchApi<MembershipPlan[]>('/api/v1/membership-plans', {
+            method: 'GET',
+        });
+    },
+
+    getById: async (id: string) => {
+        return fetchApi<MembershipPlan>(`/api/v1/membership-plans/${id}`, {
+            method: 'GET',
+        });
+    },
+
+    create: async (data: any) => {
+        return fetchApi<MembershipPlan>('/api/v1/membership-plans', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    update: async (id: string, data: any) => {
+        return fetchApi<MembershipPlan>(`/api/v1/membership-plans/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data),
+        });
+    },
+
+    delete: async (id: string) => {
+        return fetchApi<{ success: boolean }>(`/api/v1/membership-plans/${id}`, {
+            method: 'DELETE',
+        });
+    }
+};
+
+/**
+ * Payment API Endpoints
+ */
+export const paymentApi = {
+    initiate: async (data: { membershipPlanId: string; amount: number; currency?: string }) => {
+        return fetchApi<{ paymentUrl: string }>('/api/v1/payments/initiate', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    verify: async (transactionId: string) => {
+        return fetchApi<Payment>(`/api/v1/payments/verify/${transactionId}`, {
+            method: 'GET',
+        });
+    },
 };
