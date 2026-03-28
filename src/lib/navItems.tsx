@@ -6,7 +6,9 @@ import {
   ShoppingBagIcon, 
   LayersIcon,
   CreditCardIcon,
-  UserCheckIcon
+  UserCheckIcon,
+  PlusCircleIcon,
+  ListIcon
 } from "lucide-react";
 
 export interface DashboardLink {
@@ -14,6 +16,11 @@ export interface DashboardLink {
   url: string;
   icon: any;
   roles?: string[]; // If empty, all roles can access
+  items?: {
+    title: string;
+    url: string;
+    icon?: any;
+  }[];
 }
 
 export const sidebarLinks: DashboardLink[] = [
@@ -40,19 +47,27 @@ export const sidebarLinks: DashboardLink[] = [
     roles: ["ADMIN", "SUPERADMIN"],
   },
   {
-    title: "Category Management",
+    title: "Categories",
     url: "/dashboard/categories",
     icon: LayersIcon,
     roles: ["ADMIN", "SUPERADMIN"],
+    items: [
+      { title: "All Categories", url: "/dashboard/categories", icon: ListIcon },
+      { title: "Add Category", url: "/dashboard/categories/add", icon: PlusCircleIcon },
+    ]
   },
   {
-    title: "Books Library",
+    title: "Books",
     url: "/dashboard/books",
     icon: BookOpenIcon,
     roles: ["ADMIN", "SUPERADMIN"],
+    items: [
+      { title: "All Books", url: "/dashboard/books", icon: ListIcon },
+      { title: "Add Book", url: "/dashboard/books/add", icon: PlusCircleIcon },
+    ]
   },
 
-  // User Specific
+  // User Specific (Can also have dropdowns if needed)
   {
     title: "My Borrowings",
     url: "/dashboard/my-borrowings",

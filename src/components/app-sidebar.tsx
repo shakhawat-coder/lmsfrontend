@@ -4,6 +4,7 @@ import * as React from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { sidebarLinks } from "@/lib/navItems";
 import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -12,18 +13,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { LibraryBigIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
-  const pathname = usePathname();
 
   // Filter links based on user role
   const filteredLinks = sidebarLinks.filter((link) => {
@@ -41,7 +37,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <LibraryBigIcon className="size-4" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
+                <div className="flex flex-col gap-0.5 leading-none text-left">
                   <span className="font-semibold">LMS System</span>
                   <span className="text-xs text-muted-foreground">v1.0.0</span>
                 </div>
@@ -52,27 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {filteredLinks.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    tooltip={item.title}
-                    isActive={pathname === item.url}
-                  >
-                    <Link href={item.url}>
-                      {item.icon && <item.icon className="h-4 w-4" />}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavMain items={filteredLinks} label="Dashboard Menu" />
       </SidebarContent>
 
       <SidebarFooter>

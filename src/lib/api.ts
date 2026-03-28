@@ -14,6 +14,15 @@ export interface Session {
     session: any;
 }
 
+export interface Category {
+    id: string;
+    name: string;
+    image?: string;
+    books?: any[];
+    createdAt: string;
+    updatedAt: string;
+}
+
 /**
  * Common fetch wrapper for API calls
  */
@@ -88,6 +97,74 @@ export const authApi = {
         return fetchApi('/api/auth/sign-out', {
             method: 'POST',
             body: JSON.stringify({}),
+        });
+    }
+};
+
+/**
+ * Category API Endpoints
+ */
+export const categoryApi = {
+    getAll: async () => {
+        return fetchApi<Category[]>('/api/v1/category', {
+            method: 'GET',
+        });
+    },
+
+    getById: async (id: string) => {
+        return fetchApi<Category>(`/api/v1/category/${id}`, {
+            method: 'GET',
+        });
+    },
+
+    create: async (formData: FormData) => {
+        return fetchApi<Category>('/api/v1/category', {
+            method: 'POST',
+            body: formData, 
+        });
+    },
+
+    update: async (id: string, data: any) => {
+        return fetchApi<Category>(`/api/v1/category/${id}`, {
+            method: 'PATCH',
+            body: data instanceof FormData ? data : JSON.stringify(data),
+        });
+    },
+
+    delete: async (id: string) => {
+        return fetchApi<{ success: boolean }>(`/api/v1/category/${id}`, {
+            method: 'DELETE',
+        });
+    }
+};
+
+/**
+ * User Management API Endpoints
+ */
+export const userApi = {
+    getAll: async () => {
+        return fetchApi<User[]>('/api/v1/users', {
+            method: 'GET',
+        });
+    },
+
+    update: async (id: string, data: Partial<User>) => {
+        return fetchApi<User>(`/api/v1/users/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data),
+        });
+    },
+
+    softDelete: async (id: string) => {
+        return fetchApi<{ success: boolean }>(`/api/v1/users/${id}`, {
+            method: 'DELETE',
+        });
+    },
+
+    createAdmin: async (adminData: any) => {
+        return fetchApi<User>('/api/v1/users/create-admin', {
+            method: 'POST',
+            body: JSON.stringify(adminData),
         });
     }
 };
