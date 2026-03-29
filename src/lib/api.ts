@@ -235,10 +235,10 @@ export const userApi = {
         });
     },
 
-    update: async (id: string, data: Partial<User>) => {
+    update: async (id: string, data: any) => {
         return fetchApi<User>(`/api/v1/users/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(data),
+            body: data instanceof FormData ? data : JSON.stringify(data),
         });
     },
 
@@ -407,4 +407,28 @@ export const paymentApi = {
             method: 'GET',
         });
     },
+};
+
+/**
+ * Contact API Endpoints
+ */
+export const contactApi = {
+    sendMessage: async (data: { name: string; email: string; subject: string; message: string }) => {
+        return fetchApi('/api/v1/contact', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    getAllMessages: async () => {
+        return fetchApi<any[]>('/api/v1/contact', {
+            method: 'GET',
+        });
+    },
+
+    deleteMessage: async (id: string) => {
+        return fetchApi<{ success: boolean }>(`/api/v1/contact/${id}`, {
+            method: 'DELETE',
+        });
+    }
 };

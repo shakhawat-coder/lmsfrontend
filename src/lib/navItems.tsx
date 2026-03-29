@@ -2,13 +2,14 @@ import {
   UsersIcon, 
   BookOpenIcon, 
   LayoutDashboardIcon, 
-  SettingsIcon, 
+  UserIcon,
   ShoppingBagIcon, 
   LayersIcon,
   CreditCardIcon,
   UserCheckIcon,
   PlusCircleIcon,
-  ListIcon
+  ListIcon,
+  MailIcon
 } from "lucide-react";
 
 export interface DashboardLink {
@@ -76,6 +77,12 @@ export const sidebarLinks: DashboardLink[] = [
       { title: "Membership Plans", url: "/dashboard/membership-plans", icon: ListIcon },
     ]
   },
+  {
+    title: "Messages",
+    url: "/dashboard/contacts",
+    icon: MailIcon,
+    roles: ["ADMIN", "SUPERADMIN"],
+  },
 
   // User Specific (Can also have dropdowns if needed)
   {
@@ -91,10 +98,10 @@ export const sidebarLinks: DashboardLink[] = [
     roles: ["USER"],
   },
 
-  // Common Settings
+  // Common Profile Management
   {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: SettingsIcon,
+    title: "Manage Profile",
+    url: "/dashboard/profile",
+    icon: UserIcon,
   },
 ];

@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { membershipPlanApi, MembershipPlan as IMembershipPlan } from '@/lib/api';
 import { useAuth } from '@/providers/auth-provider';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MembershipPlan = () => {
   const [plans, setPlans] = useState<IMembershipPlan[]>([]);
@@ -48,8 +49,8 @@ const MembershipPlan = () => {
   };
 
   return (
-    <section className="py-20 bg-gray-50 overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section className="py-20 bg-gray-50 w-full">
+      <div className=" mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -64,11 +65,31 @@ const MembershipPlan = () => {
         </motion.div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <Loader2Icon className="w-12 h-12 animate-spin text-blue-600" />
+          <div className="flex flex-wrap justify-center gap-8 max-w-7xl mx-auto py-10">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="w-full md:w-[350px] aspect-[4/5] bg-white rounded-2xl border border-gray-100 p-8 space-y-6 shadow-sm animate-pulse">
+                <div className="space-y-3 flex flex-col items-center">
+                   <Skeleton className="h-4 w-24 rounded-full" />
+                   <Skeleton className="h-8 w-48 rounded-lg" />
+                   <Skeleton className="h-4 w-full rounded-md" />
+                </div>
+                <div className="pt-6 space-y-3">
+                   <Skeleton className="h-10 w-32 rounded-xl" />
+                </div>
+                <div className="space-y-4 pt-10">
+                   {Array.from({ length: 4 }).map((_, j) => (
+                     <div key={j} className="flex items-center gap-3">
+                        <Skeleton className="h-5 w-5 rounded-full" />
+                        <Skeleton className="h-4 flex-1 rounded-md" />
+                     </div>
+                   ))}
+                </div>
+                <Skeleton className="h-12 w-full rounded-xl mt-10" />
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-center">
+          <div className="flex flex-wrap justify-center gap-10 max-w-7xl mx-auto items-stretch py-10">
             {plans.map((plan, index) => {
               const isPopular = plan.name === "SILVER";
               return (
@@ -79,45 +100,53 @@ const MembershipPlan = () => {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                   whileHover={{ y: -10 }}
-                  className={`relative bg-white rounded-2xl border ${isPopular ? 'border-blue-600 shadow-2xl z-10 md:scale-105' : 'border-gray-200 shadow-sm'
-                    } p-8 flex flex-col h-full`}
+                  className="flex"
                 >
-                  {isPopular && (
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      <span className="bg-blue-600 text-white text-sm font-semibold py-1 px-4 rounded-full shadow-md">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2 capitalize">{plan.name.toLowerCase()}</h3>
-                    <p className="text-gray-600 h-12 leading-tight flex items-center">{plan.description}</p>
-                  </div>
-
-                  <div className="mb-6 flex items-baseline">
-                    <span className="text-4xl font-extrabold text-gray-900">{getPriceDisplay(plan.price)}</span>
-                    <span className="text-gray-500 font-medium ml-2">{plan.interval}</span>
-                  </div>
-
-                  <ul className="mb-8 flex-1 space-y-4">
-                    {plan.features?.map((feature: string, i: number) => (
-                      <li key={i} className="flex items-start">
-                        <Check className="h-5 w-5 text-blue-600 mr-3 shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => handlePlanSelect(plan.id)}
-                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${isPopular
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'
-                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-                      }`}
+                  <div className={`relative w-full md:w-[360px] bg-white rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-gray-100 shadow-xl shadow-gray-200/50'
+                    } p-10 flex flex-col w-full h-full transition-all duration-500`}
                   >
-                    {getButtonText(plan.name)}
-                  </button>
+                    {isPopular && (
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest py-2 px-6 rounded-full shadow-2xl shadow-blue-500/40">
+                          Recommended
+                        </span>
+                      </div>
+                    )}
+  
+                    <div className="mb-8">
+                      <h3 className="text-3xl font-black text-gray-900 mb-2 capitalize italic">{plan.name.toLowerCase()}</h3>
+                      <p className="text-gray-500 font-medium leading-relaxed text-sm">{plan.description}</p>
+                    </div>
+  
+                    <div className="mb-10 flex items-baseline gap-1">
+                      <span className="text-5xl font-black text-gray-900 tracking-tighter">{getPriceDisplay(plan.price)}</span>
+                      <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">/ {plan.interval}</span>
+                    </div>
+  
+                    <div className="space-y-5 flex-1 mb-12">
+                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest border-b border-blue-50 pb-2 inline-block">Plan Features</p>
+                      <ul className="space-y-4">
+                        {plan.features?.map((feature: string, i: number) => (
+                          <li key={i} className="flex items-center gap-4 group">
+                            <div className="p-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600">
+                               <Check className="h-3 w-3" />
+                            </div>
+                            <span className="text-gray-700 font-bold text-sm group-hover:text-blue-600 transition-colors">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+  
+                    <button
+                      onClick={() => handlePlanSelect(plan.id)}
+                      className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${isPopular
+                          ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/40 hover:-translate-y-1'
+                          : 'bg-gray-900 text-white hover:bg-black hover:shadow-gray-900/40'
+                        }`}
+                    >
+                      {getButtonText(plan.name)}
+                    </button>
+                  </div>
                 </motion.div>
               );
             })}

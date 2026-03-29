@@ -15,7 +15,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, variants }) => {
     return (
         <motion.div variants={variants}>
             <Link
-                href={`/categories/${category.id}`}
+                href={`/catalog/book?category=${category.id}`}
                 className="group block relative h-72 md:h-80 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300"
             >
                 {/* Background Image Image */}

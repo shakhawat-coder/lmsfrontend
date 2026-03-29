@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Loader2Icon } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import CategoryCard from '@/components/commonComponents/CategoryCard';
+import CategoryCardSkeleton from '@/app/(publicPage)/catalog/categories/CategoryCardSkeleton';
 import { categoryApi, Category } from '@/lib/api';
 import Link from 'next/link';
 
@@ -70,8 +71,10 @@ const Categories = () => {
                 </div>
 
                 {isLoading ? (
-                    <div className="flex h-40 w-full items-center justify-center">
-                        <Loader2Icon className="h-8 w-8 animate-spin text-primary opacity-50" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <CategoryCardSkeleton key={i} />
+                        ))}
                     </div>
                 ) : (
                     <motion.div

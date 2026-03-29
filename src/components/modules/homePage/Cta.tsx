@@ -4,8 +4,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { BookOpen, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/providers/auth-provider';
 
 const Cta = () => {
+  const { user, isLoading } = useAuth();
+  
   return (
     <section className="w-full relative py-24 bg-white dark:bg-black overflow-hidden relative">
       <div className="container mx-auto px-4 relative z-10">
@@ -42,13 +45,15 @@ const Cta = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
-              <Link href="/register">
-                <button className="w-full sm:w-auto px-8 py-4 cursor-pointer bg-white text-blue-700 font-bold rounded-xl text-lg hover:bg-blue-50 transition-all shadow-[0_4px_14px_0_rgba(255,255,255,0.39)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.23)] hover:-translate-y-1 transform duration-300 flex items-center justify-center gap-2">
-                  Create Account <ArrowRight className="w-5 h-5" />
-                </button>
-              </Link>
+              {!isLoading && !user && (
+                <Link href="/register">
+                  <button className="w-full sm:w-auto px-8 py-4 cursor-pointer bg-white text-blue-700 font-bold rounded-xl text-lg hover:bg-blue-50 transition-all shadow-[0_4px_14px_0_rgba(255,255,255,0.39)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.23)] hover:-translate-y-1 transform duration-300 flex items-center justify-center gap-2">
+                    Create Account <ArrowRight className="w-5 h-5" />
+                  </button>
+                </Link>
+              )}
               
-              <Link href="/catalog/all">
+              <Link href="/catalog/book">
                 <button className="w-full sm:w-auto px-8 py-4 cursor-pointer bg-blue-700/50 text-white font-bold rounded-xl text-lg backdrop-blur-md border border-blue-400/30 hover:bg-blue-700/70 transition-all hover:-translate-y-1 transform duration-300">
                   Explore Books
                 </button>

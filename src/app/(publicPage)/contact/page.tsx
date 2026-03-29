@@ -33,6 +33,9 @@ import {
   FieldError,
 } from "@/components/ui/field";
 
+import { contactApi } from "@/lib/api";
+import { toast } from "sonner";
+
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -86,13 +89,17 @@ const ContactPage = () => {
       return;
     }
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Form Submitted:", result.data);
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    try {
+      await contactApi.sendMessage(result.data);
+      setIsSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      toast.success("Message sent successfully!");
+    } catch (error: any) {
+      console.error("Form Submission Error:", error);
+      toast.error(error.message || "Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const containerVariants: Variants = {

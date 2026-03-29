@@ -5,6 +5,11 @@ import React, { useState, useEffect } from "react";
 import { Book, Menu, Search, Sunset, Trees, Zap, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
 import {
   Accordion,
@@ -125,6 +130,7 @@ const Navbar = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isLoading, logout: authLogout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = async () => {
     try {
@@ -134,6 +140,25 @@ const Navbar = ({
       router.refresh();
     } catch (error) {
       console.error("Logout failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length > 0) {
+        router.push(`/catalog/book?search=${encodeURIComponent(searchQuery)}`);
+      } else if (pathname === "/catalog/book" && searchQuery === "") {
+        // If we're already on the books page and clear search, update the URL
+        router.push("/catalog/book");
+      }
+    }, 500); 
+    return () => clearTimeout(timer);
+  }, [searchQuery, router, pathname]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/catalog/book?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -174,8 +199,13 @@ const Navbar = ({
             </NavigationMenu>
           </div>
             <div className="flex items-center gap-2">
-              <form className="relative mr-2">
-                <Input placeholder="Search books..." className="pr-8" />
+              <form className="relative mr-2" onSubmit={handleSearchSubmit}>
+                <Input 
+                  placeholder="Search books..." 
+                  className="pr-8" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
                 <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
                   <Search className="h-4 w-4" />
                 </Button>
@@ -191,14 +221,19 @@ const Navbar = ({
                     className="flex items-center gap-2 hover:bg-transparent"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      {user.name?.charAt(0) || <User className="h-4 w-4" />}
-                    </div>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user.image || ""} alt={user.name} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {user.name?.charAt(0) || <User className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
                   </Button>
 
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1 shadow-lg z-[100]">
-                      <Button asChild variant="ghost" className="w-full justify-start gap-2" size="sm" onClick={() => setIsDropdownOpen(false)}>
+                      <Button asChild variant="ghost" className="w-full justify-start gap-2" size="sm" onClick={() => {
+                        setIsDropdownOpen(false);
+                      }}>
                         <Link href="/dashboard">
                           <LayoutDashboard className="h-4 w-4" />
                           Dashboard
@@ -263,8 +298,13 @@ const Navbar = ({
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
-                  <form className="relative">
-                    <Input placeholder="Search books..." className="pr-8" />
+                  <form className="relative" onSubmit={handleSearchSubmit}>
+                    <Input 
+                      placeholder="Search books..." 
+                      className="pr-8" 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
                       <Search className="h-4 w-4" />
                     </Button>
@@ -283,9 +323,12 @@ const Navbar = ({
                     ) : user ? (
                       <>
                         <div className="flex items-center gap-3 rounded-md bg-muted p-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                            {user.name?.charAt(0) || <User className="h-4 w-4" />}
-                          </div>
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={user.image || ""} alt={user.name} />
+                            <AvatarFallback className="bg-primary text-primary-foreground">
+                              {user.name?.charAt(0) || <User className="h-4 w-4" />}
+                            </AvatarFallback>
+                          </Avatar>
                           <div>
                             <p className="text-sm font-semibold">{user.name}</p>
                             <p className="text-xs text-muted-foreground">{user.email}</p>

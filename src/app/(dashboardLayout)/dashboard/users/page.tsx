@@ -72,15 +72,6 @@ export default function UsersPage() {
     }
   };
 
-  const updateRole = async (id: string, newRole: string) => {
-    try {
-      await userApi.update(id, { role: newRole as any });
-      setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole as any } : u));
-    } catch (error) {
-      console.error("Failed to update role:", error);
-      alert("Failed to update role");
-    }
-  };
 
   if (isLoading) return <div className="p-4 flex h-64 items-center justify-center text-muted-foreground">Loading users...</div>;
 
@@ -155,11 +146,6 @@ export default function UsersPage() {
                 </TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                    {currentUser?.role === "SUPERADMIN" && item.role === "USER" && (
-                      <Button variant="ghost" size="sm" onClick={() => updateRole(item.id, "ADMIN")} className="text-xs h-8">
-                        Promote
-                      </Button>
-                    )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">

@@ -1,5 +1,3 @@
-import Image from "next/image";
-import { Button } from "../components/ui/button";
 import Banner from "@/components/modules/homePage/Banner";
 import Categories from "@/components/modules/homePage/Categories";
 import MostReadedBooks from "@/components/modules/homePage/MostReadedBooks";

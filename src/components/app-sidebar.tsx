@@ -34,8 +34,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <LibraryBigIcon className="size-4" />
+                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <img src="/logo.png" alt="logo" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none text-left">
                   <span className="font-semibold">LMS System</span>

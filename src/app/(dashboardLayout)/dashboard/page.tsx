@@ -164,54 +164,56 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Main Chart Card - Vertical Bars */}
-        <Card className="col-span-4 overflow-hidden border-none bg-gradient-to-br from-card to-secondary/30 shadow-lg">
-          <CardHeader>
-            <CardTitle>Activity Insights</CardTitle>
-            <CardDescription>
-              {isAdmin ? "Book distribution across all categories" : "Your most frequent reading categories"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] flex items-end justify-between px-6 pb-12 gap-2 relative">
-             {/* Simple visual chart using bars */}
-             {data.categories.length > 0 ? (
-               data.categories.slice(0, 6).map((cat, i) => {
-                 const count = data.books.filter(b => b.categoryId === cat.id).length;
-                 const maxCount = Math.max(...data.categories.map(c => data.books.filter(b => b.categoryId === c.id).length), 1);
-                 const height = Math.max(20, (count / maxCount) * 200);
-                 
-                 return (
-                   <div key={cat.id} className="flex flex-col items-center flex-1 gap-2 group z-10">
-                     <motion.div 
-                       initial={{ height: 0 }}
-                       animate={{ height }}
-                       transition={{ duration: 0.8, delay: 0.5 + (i * 0.1) }}
-                       className="w-full max-w-[40px] bg-primary/20 hover:bg-primary transition-colors rounded-t-lg relative"
-                     >
-                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                          {count}
-                       </div>
-                     </motion.div>
-                     <span className="text-[10px] text-muted-foreground font-medium truncate w-full text-center">
-                       {cat.name}
-                     </span>
-                   </div>
-                 )
-               })
-             ) : (
-               <div className="w-full h-full flex items-center justify-center text-muted-foreground">No category data available</div>
-             )}
-             
-             {/* Background Grid Lines */}
-             <div className="absolute inset-x-6 top-10 bottom-12 border-b border-muted pointer-events-none flex flex-col justify-between opacity-30 z-0">
-                <div className="border-t border-muted w-full h-1" />
-                <div className="border-t border-muted w-full h-1" />
-                <div className="border-t border-muted w-full h-1" />
-             </div>
-          </CardContent>
-        </Card>
-
+        {isAdmin && (
+          <Card className="col-span-4 overflow-hidden border-none bg-gradient-to-br from-card to-secondary/30 shadow-lg">
+            <CardHeader>
+              <CardTitle>Activity Insights</CardTitle>
+              <CardDescription>
+                Book distribution across all categories
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-[300px] flex items-end justify-between px-6 pb-12 gap-2 relative">
+               {/* Simple visual chart using bars */}
+               {data.categories.length > 0 ? (
+                 data.categories.slice(0, 6).map((cat, i) => {
+                   const count = data.books.filter(b => b.categoryId === cat.id).length;
+                   const maxCount = Math.max(...data.categories.map(c => data.books.filter(b => b.categoryId === c.id).length), 1);
+                   const height = Math.max(20, (count / maxCount) * 200);
+                   
+                   return (
+                     <div key={cat.id} className="flex flex-col items-center flex-1 gap-2 group z-10">
+                       <motion.div 
+                         initial={{ height: 0 }}
+                         animate={{ height }}
+                         transition={{ duration: 0.8, delay: 0.5 + (i * 0.1) }}
+                         className="w-full max-w-[40px] bg-primary/20 hover:bg-primary transition-colors rounded-t-lg relative"
+                       >
+                         <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                            {count}
+                         </div>
+                       </motion.div>
+                       <span className="text-[10px] text-muted-foreground font-medium truncate w-full text-center">
+                         {cat.name}
+                       </span>
+                     </div>
+                   )
+                 })
+               ) : (
+                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">No category data available</div>
+               )}
+               
+               {/* Background Grid Lines */}
+               <div className="absolute inset-x-6 top-10 bottom-12 border-b border-muted pointer-events-none flex flex-col justify-between opacity-30 z-0">
+                  <div className="border-t border-muted w-full h-1" />
+                  <div className="border-t border-muted w-full h-1" />
+                  <div className="border-t border-muted w-full h-1" />
+               </div>
+            </CardContent>
+          </Card>
+        )}
+ 
         {/* Status/Recent Card */}
-        <Card className="col-span-3">
+        <Card className={isAdmin ? "col-span-3" : "col-span-full"}>
           <CardHeader>
             <CardTitle>{isAdmin ? "Recent Users" : "Latest Borrowings"}</CardTitle>
             <CardDescription>

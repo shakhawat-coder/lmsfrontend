@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import BookCard from '@/components/commonComponents/BookCard';
-import { Sparkles, Loader2Icon } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { bookApi, Book } from '@/lib/api';
+import BookCardSkeleton from '@/components/commonComponents/BookCardSkeleton';
 
 const NewArrivalsPage = () => {
     const [newArrivals, setNewArrivals] = useState<Book[]>([]);
@@ -47,8 +48,10 @@ const NewArrivalsPage = () => {
 
             {/* Grid */}
             {isLoading ? (
-                <div className="flex justify-center items-center py-20">
-                    <Loader2Icon className="h-10 w-10 animate-spin text-primary opacity-50" />
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-6 sm:gap-8 min-h-[500px]">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <BookCardSkeleton key={i} />
+                    ))}
                 </div>
             ) : newArrivals.length === 0 ? (
                 <div className="text-center py-20 text-muted-foreground">

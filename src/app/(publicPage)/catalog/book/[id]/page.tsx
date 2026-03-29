@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { bookApi, borrowingApi, Book } from '@/lib/api';
 import BookCard from '@/components/commonComponents/BookCard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const BookDetailsPage = () => {
     const { id } = useParams();
@@ -90,11 +91,43 @@ const BookDetailsPage = () => {
             setIsBorrowing(false);
         }
     };
-
     if (isLoading) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center">
-                <Loader2Icon className="h-12 w-12 animate-spin text-primary opacity-50" />
+            <div className="min-h-screen bg-white dark:bg-gray-950 py-24">
+                <div className="container mx-auto px-4">
+                    <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+                        <div className="lg:col-span-5 xl:col-span-4">
+                            <Skeleton className="aspect-3/4 rounded-[2rem] w-full" />
+                        </div>
+                        <div className="lg:col-span-7 xl:col-span-8 space-y-8">
+                            <div className="space-y-4">
+                                <Skeleton className="h-6 w-24 rounded-full" />
+                                <Skeleton className="h-16 w-3/4 rounded-xl" />
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="w-12 h-12 rounded-full" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-3 w-20" />
+                                    <Skeleton className="h-5 w-32" />
+                                </div>
+                            </div>
+                            <Separator />
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+                                {Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={i} className="space-y-2">
+                                        <Skeleton className="h-3 w-12" />
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                ))}
+                            </div>
+                            <Skeleton className="h-32 w-full rounded-3xl" />
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <Skeleton className="h-16 flex-1 rounded-2xl" />
+                                <Skeleton className="h-16 w-40 rounded-2xl" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

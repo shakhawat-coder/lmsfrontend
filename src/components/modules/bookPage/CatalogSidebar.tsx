@@ -1,26 +1,38 @@
 "use client";
 
 import React from 'react';
-import { Search, Filter, BookOpen, User, Tag } from 'lucide-react';
+import { Filter, BookOpen, User, Tag } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Category } from '@/lib/api';
 
-const categories = ["Fiction", "Non-Fiction", "Science", "Technology", "History", "Biography"];
-const authors = ["J.K. Rowling", "George Orwell", "Stephen Hawking", "Robert Kiyosaki", "Yuval Noah Harari", "Walter Isaacson"];
+interface CatalogSidebarProps {
+    categories: Category[];
+    authors: string[];
+    selectedCategories: string[];
+    selectedAuthors: string[];
+    onCategoryChange: (categoryId: string) => void;
+    onAuthorChange: (author: string) => void;
+    searchTerm: string;
+    onSearchChange: (term: string) => void;
+    onlyAvailable: boolean;
+    onAvailabilityToggle: () => void;
+}
 
-const SidebarContent = () => (
+const SidebarContent = ({ 
+    categories, 
+    authors, 
+    selectedCategories, 
+    selectedAuthors, 
+    onCategoryChange, 
+    onAuthorChange,
+    searchTerm,
+    onSearchChange,
+    onlyAvailable,
+    onAvailabilityToggle
+}: CatalogSidebarProps) => (
     <div className="space-y-8 px-3 lg:px-0">
-        {/* Search */}
-        <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                <Search className="w-4 h-4 text-blue-600" />
-                Search Books
-            </h3>
-            <Input type="text" placeholder="Title, author, or ISBN..." className="w-full" />
-        </div>
-
-        <div className="max-h-[50vh] overflow-y-auto pr-2 space-y-8 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
+        <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-8 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
             {/* Categories */}
             <div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
@@ -28,22 +40,28 @@ const SidebarContent = () => (
                     Categories
                 </h3>
                 <div className="space-y-2.5">
-                    {categories.map((category) => (
-                        <label key={category} className="flex items-center gap-3 cursor-pointer group">
-                            <div className="relative flex items-center justify-center">
-                                <input 
-                                    type="checkbox" 
-                                    className="peer appearance-none w-5 h-5 border-2 border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer"
-                                />
-                                <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
-                                {category}
-                            </span>
-                        </label>
-                    ))}
+                    {categories.length > 0 ? (
+                        categories.map((category) => (
+                            <label key={category.id} className="flex items-center gap-3 cursor-pointer group">
+                                <div className="relative flex items-center justify-center">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedCategories.includes(category.id)}
+                                        onChange={() => onCategoryChange(category.id)}
+                                        className="peer appearance-none w-5 h-5 border-2 border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer"
+                                    />
+                                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                                <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
+                                    {category.name}
+                                </span>
+                            </label>
+                        ))
+                    ) : (
+                        <p className="text-sm text-gray-400">Loading categories...</p>
+                    )}
                 </div>
             </div>
 
@@ -54,22 +72,28 @@ const SidebarContent = () => (
                     Authors
                 </h3>
                 <div className="space-y-2.5">
-                    {authors.map((author) => (
-                        <label key={author} className="flex items-center gap-3 cursor-pointer group">
-                            <div className="relative flex items-center justify-center">
-                                <input 
-                                    type="checkbox" 
-                                    className="peer appearance-none w-5 h-5 border-2 border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer"
-                                />
-                                <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
-                                {author}
-                            </span>
-                        </label>
-                    ))}
+                    {authors.length > 0 ? (
+                        authors.map((author) => (
+                            <label key={author} className="flex items-center gap-3 cursor-pointer group">
+                                <div className="relative flex items-center justify-center">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedAuthors.includes(author)}
+                                        onChange={() => onAuthorChange(author)}
+                                        className="peer appearance-none w-5 h-5 border-2 border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer"
+                                    />
+                                    <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                                <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
+                                    {author}
+                                </span>
+                            </label>
+                        ))
+                    ) : (
+                        <p className="text-sm text-gray-400">Loading authors...</p>
+                    )}
                 </div>
             </div>
 
@@ -84,6 +108,8 @@ const SidebarContent = () => (
                         <div className="relative flex items-center justify-center">
                             <input 
                                 type="checkbox" 
+                                checked={onlyAvailable}
+                                onChange={onAvailabilityToggle}
                                 className="peer appearance-none w-5 h-5 border-2 border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer"
                             />
                             <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -97,10 +123,26 @@ const SidebarContent = () => (
                 </div>
             </div>
         </div>
+        
+        {(selectedCategories.length > 0 || selectedAuthors.length > 0 || searchTerm || onlyAvailable) && (
+            <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 py-1"
+                onClick={() => {
+                    onSearchChange("");
+                    if (onlyAvailable) onAvailabilityToggle();
+                    selectedCategories.forEach(c => onCategoryChange(c));
+                    selectedAuthors.forEach(a => onAuthorChange(a));
+                }}
+            >
+                Clear All Filters
+            </Button>
+        )}
     </div>
 );
 
-const CatalogSidebar = () => {
+const CatalogSidebar = (props: CatalogSidebarProps) => {
     return (
         <>
             {/* Mobile Sidebar (Sheet) */}
@@ -120,7 +162,7 @@ const CatalogSidebar = () => {
                                 All Filters
                             </SheetTitle>
                         </SheetHeader>
-                        <SidebarContent />
+                        <SidebarContent {...props} />
                     </SheetContent>
                 </Sheet>
             </div>
@@ -132,7 +174,7 @@ const CatalogSidebar = () => {
                         <Filter className="w-5 h-5 text-blue-600" />
                         <h2 className="text-lg font-bold text-gray-900 dark:text-white">Filters</h2>
                     </div>
-                    <SidebarContent />
+                    <SidebarContent {...props} />
                 </div>
             </div>
         </>

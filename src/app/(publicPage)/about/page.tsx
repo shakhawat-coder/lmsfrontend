@@ -209,34 +209,6 @@ const AboutPage = () => {
           ))}
         </div>
       </section>
-
-      {/* Team CTA Section */}
-      <section className="py-24 container px-4 mb-20">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="bg-blue-600 rounded-[3rem] p-12 text-center text-white relative overflow-hidden shadow-2xl"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full -ml-32 -mb-32 blur-3xl" />
-          
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Start Your Journey?</h2>
-            <p className="text-xl text-blue-100 mb-10 leading-relaxed">
-              Join thousands of readers who have already discovered a world of endless possibilities. Create your free account today and start borrowing!
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" variant="secondary" className="rounded-full px-10 text-blue-600 hover:bg-white">
-                Get Started Now
-              </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-10 border-white text-white hover:bg-white/10">
-                Browse Collection
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      </section>
     </div>
   );
 };

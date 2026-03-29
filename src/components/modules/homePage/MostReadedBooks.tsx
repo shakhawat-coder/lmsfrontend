@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import BookCard from '@/components/commonComponents/BookCard';
 import { bookApi, Book } from '@/lib/api';
-import { Loader2Icon } from 'lucide-react';
+import BookCardSkeleton from '@/components/commonComponents/BookCardSkeleton';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,8 +61,10 @@ const MostReadedBooks = () => {
                 </div>
 
                 {isLoading ? (
-                    <div className="flex h-40 w-full items-center justify-center">
-                        <Loader2Icon className="h-8 w-8 animate-spin text-primary opacity-50" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 min-h-[400px]">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <BookCardSkeleton key={i} />
+                        ))}
                     </div>
                 ) : (
                     <motion.div
