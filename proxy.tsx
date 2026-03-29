@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/providers/auth-provider";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, ReactNode } from "react";
+import { useEffect, ReactNode, useMemo } from "react";
 import { sidebarLinks } from "@/lib/navItems";
 import { Loader2Icon } from "lucide-react";
 
@@ -15,10 +15,23 @@ export function RoleProxy({ children }: RoleProxyProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Find the security rule for the current path
-  const securityRule = sidebarLinks.find(link => 
-    pathname.startsWith(link.url) && link.roles && link.roles.length > 0
-  );
+  // Find the security rule for the current path, checking sub-items as well
+  const securityRule = useMemo(() => {
+    for (const link of sidebarLinks) {
+      // Check top-level link
+      if (pathname.startsWith(link.url) && link.roles && link.roles.length > 0) {
+        return link;
+      }
+      // Check sub-items
+      if (link.items) {
+        const subItem = link.items.find(item => pathname.startsWith(item.url));
+        if (subItem && link.roles && link.roles.length > 0) {
+          return link; // Use the roles from parent
+        }
+      }
+    }
+    return undefined;
+  }, [pathname]);
 
   // Synchronous authorization check
   const isAuthorized = !securityRule || (user?.role && securityRule.roles?.includes(user.role));

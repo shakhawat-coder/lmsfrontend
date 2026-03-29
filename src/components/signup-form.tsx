@@ -23,6 +23,7 @@ import { z } from "zod";
 import { Loader2, AlertCircle } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 const signupSchema = z
   .object({
@@ -91,6 +92,21 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       router.push("/login?message=Account created! Please check your email to verify.");
     } catch (error: any) {
       setApiError(error.message || "Failed to create account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsSubmitting(true);
+      setApiError(null);
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: window.location.origin + "/dashboard",
+      });
+    } catch (error: any) {
+      setApiError(error.message || "Failed to sign up with Google.");
     } finally {
       setIsSubmitting(false);
     }
@@ -167,7 +183,15 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create Account
                 </Button>
-                <Button variant="outline" type="button" disabled={isSubmitting}>
+                <Button 
+                   variant="outline" 
+                   type="button" 
+                   disabled={isSubmitting}
+                   onClick={handleGoogleLogin}
+                >
+                  <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                    <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                  </svg>
                   Sign up with Google
                 </Button>
                 <FieldDescription className="px-6 text-center">

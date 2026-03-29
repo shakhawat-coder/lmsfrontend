@@ -9,7 +9,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowLeftIcon, UploadCloudIcon, XIcon, Loader2Icon, CheckCircle2Icon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { Field, FieldError } from "@/components/ui/field";
 import Link from "next/link";
+
+const bookSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  author: z.string().min(1, "Author is required"),
+  categoryId: z.string().min(1, "Category is required"),
+  isbn: z.string().optional(),
+  language: z.string().optional(),
+  year: z.string().optional(),
+  pages: z.string().refine(v => !v || !isNaN(Number(v)), "Pages must be a number").optional(),
+  description: z.string().optional(),
+  image: z.any().optional(),
+});
 
 export default function EditBookPage() {
   const router = useRouter();
@@ -20,7 +35,8 @@ export default function EditBookPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -63,7 +79,7 @@ export default function EditBookPage() {
         setIsLoading(false);
       } catch (err) {
         console.error("Failed to fetch book details:", err);
-        setError("Failed to load book or categories.");
+        setApiError("Failed to load book or categories.");
         setIsLoading(false);
       }
     };
@@ -79,12 +95,12 @@ export default function EditBookPage() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       if (selectedFile.size > 2 * 1024 * 1024) {
-         setError("Cover image size should be less than 2MB");
+         setErrors({ image: "Cover image size should be less than 2MB" });
          return;
       }
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
-      setError(null);
+      setErrors({});
     }
   };
 
@@ -96,13 +112,20 @@ export default function EditBookPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.author || !formData.categoryId) {
-        setError("Title, Author, and Category are required");
-        return;
+    
+    const result = bookSchema.safeParse({ ...formData, image: file });
+    if (!result.success) {
+      const fieldErrors: any = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
     }
 
     setIsSubmitting(true);
-    setError(null);
+    setErrors({});
+    setApiError(null);
     
     try {
       const fd = new FormData();
@@ -123,7 +146,7 @@ export default function EditBookPage() {
       }, 1500);
     } catch (error: any) {
       console.error("Failed to update book:", error);
-      setError(error.message || "Failed to update book.");
+      setApiError(error.message || "Failed to update book.");
     } finally {
       setIsSubmitting(false);
     }
@@ -171,36 +194,42 @@ export default function EditBookPage() {
                   General Details
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 pt-0">
-                <div className="space-y-2">
+               <CardContent className="space-y-6 pt-0">
+                <Field>
                   <Label htmlFor="title" className="text-xs font-bold uppercase tracking-wide opacity-80">Book Title <span className="text-destructive">*</span></Label>
-                  <Input id="title" value={formData.title} onChange={handleInputChange} required className="h-11 border-border/80 font-semibold text-lg" />
-                </div>
+                  <Input id="title" value={formData.title} onChange={handleInputChange} className={cn("h-11 border-border/80 font-semibold text-lg", errors.title ? "border-destructive text-destructive" : "")} />
+                  {errors.title && <FieldError errors={[{ message: errors.title }]} />}
+                </Field>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <Field>
                     <Label htmlFor="author" className="text-xs font-bold uppercase tracking-wide opacity-80">Author <span className="text-destructive">*</span></Label>
-                    <Input id="author" value={formData.author} onChange={handleInputChange} required className="h-10 border-border/80" />
-                  </div>
-                  <div className="space-y-2">
+                    <Input id="author" value={formData.author} onChange={handleInputChange} className={cn("h-10 border-border/80", errors.author ? "border-destructive" : "")} />
+                    {errors.author && <FieldError errors={[{ message: errors.author }]} />}
+                  </Field>
+                  <Field>
                     <Label htmlFor="categoryId" className="text-xs font-bold uppercase tracking-wide opacity-80">Category <span className="text-destructive">*</span></Label>
                     <select
                       id="categoryId"
-                      className="flex h-10 w-full rounded-md border border-border/80 bg-transparent px-3 py-2 text-sm ring-offset-background focus:ring-1 focus:ring-primary/40 font-medium"
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-border/80 bg-transparent px-3 py-2 text-sm ring-offset-background focus:ring-1 focus:ring-primary/40 font-medium",
+                        errors.categoryId ? "border-destructive" : ""
+                      )}
                       value={formData.categoryId}
                       onChange={handleInputChange}
-                      required
                     >
                       <option value="">Choose Repository</option>
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                       ) )}
                     </select>
-                  </div>
+                    {errors.categoryId && <FieldError errors={[{ message: errors.categoryId }]} />}
+                  </Field>
                 </div>
-                <div className="space-y-2">
+                <Field>
                   <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wide opacity-80">Synopsis / Description</Label>
-                  <Textarea id="description" value={formData.description} onChange={handleInputChange} rows={8} className="border-border/80 resize-none rounded-xl" placeholder="Describe the soul of this book..." />
-                </div>
+                  <Textarea id="description" value={formData.description} onChange={handleInputChange} rows={8} className={cn("border-border/80 resize-none rounded-xl", errors.description ? "border-destructive" : "")} placeholder="Describe the soul of this book..." />
+                  {errors.description && <FieldError errors={[{ message: errors.description }]} />}
+                </Field>
               </CardContent>
             </Card>
 
@@ -209,22 +238,26 @@ export default function EditBookPage() {
                 <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">Metadata Specifications</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-x-8 gap-y-4 pt-0">
-                <div className="space-y-1.5 px-1">
+                <Field className="space-y-1.5 px-1">
                   <Label htmlFor="isbn" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">ISBN Identitifier</Label>
-                  <Input id="isbn" value={formData.isbn} onChange={handleInputChange} className="h-10 border-border/80" />
-                </div>
-                <div className="space-y-1.5 px-1">
+                  <Input id="isbn" value={formData.isbn} onChange={handleInputChange} className={cn("h-10 border-border/80", errors.isbn ? "border-destructive text-destructive" : "")} />
+                  {errors.isbn && <FieldError errors={[{ message: errors.isbn }]} />}
+                </Field>
+                <Field className="space-y-1.5 px-1">
                   <Label htmlFor="language" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Publication Language</Label>
-                  <Input id="language" value={formData.language} onChange={handleInputChange} className="h-10 border-border/80" />
-                </div>
-                <div className="space-y-1.5 px-1">
+                  <Input id="language" value={formData.language} onChange={handleInputChange} className={cn("h-10 border-border/80", errors.language ? "border-destructive text-destructive" : "")} />
+                  {errors.language && <FieldError errors={[{ message: errors.language }]} />}
+                </Field>
+                <Field className="space-y-1.5 px-1">
                   <Label htmlFor="year" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Publish Year</Label>
-                  <Input id="year" value={formData.year} onChange={handleInputChange} className="h-10 border-border/80" />
-                </div>
-                <div className="space-y-1.5 px-1">
+                  <Input id="year" value={formData.year} onChange={handleInputChange} className={cn("h-10 border-border/80", errors.year ? "border-destructive text-destructive" : "")} />
+                  {errors.year && <FieldError errors={[{ message: errors.year }]} />}
+                </Field>
+                <Field className="space-y-1.5 px-1">
                   <Label htmlFor="pages" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Page Collection</Label>
-                  <Input id="pages" type="number" value={formData.pages} onChange={handleInputChange} className="h-10 border-border/80" />
-                </div>
+                  <Input id="pages" type="number" value={formData.pages} onChange={handleInputChange} className={cn("h-10 border-border/80", errors.pages ? "border-destructive text-destructive" : "")} />
+                  {errors.pages && <FieldError errors={[{ message: errors.pages }]} />}
+                </Field>
               </CardContent>
             </Card>
           </div>
@@ -234,7 +267,7 @@ export default function EditBookPage() {
               <CardHeader className="p-4">
                 <CardTitle className="text-xs font-bold text-center uppercase tracking-widest opacity-60">Cover Art</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 pt-0 px-4 flex flex-col items-center">
+               <CardContent className="space-y-6 pt-0 px-4 flex flex-col items-center">
                 <div className="w-full">
                    {existingImage && !preview && (
                       <div className="space-y-3">
@@ -245,12 +278,15 @@ export default function EditBookPage() {
                       </div>
                    )}
                    
-                   <div className="space-y-2 mt-4">
+                   <Field className="space-y-2 mt-4">
                        {!preview ? (
                            <Button 
                             type="button" 
                             variant="outline" 
-                            className="w-full h-12 border-dashed border-2 hover:bg-accent hover:border-primary/50"
+                            className={cn(
+                              "w-full h-12 border-dashed border-2 hover:bg-accent hover:border-primary/50",
+                              errors.image ? "border-destructive text-destructive" : ""
+                            )}
                             onClick={() => fileInputRef.current?.click()}
                            >
                              <UploadCloudIcon className="h-4 w-4 mr-2" />
@@ -273,6 +309,7 @@ export default function EditBookPage() {
                                </div>
                            </div>
                        )}
+                       {errors.image && <FieldError errors={[{ message: errors.image }]} />}
                        <input
                         ref={fileInputRef}
                         type="file"
@@ -280,7 +317,7 @@ export default function EditBookPage() {
                         accept="image/*"
                         onChange={handleFileChange}
                        />
-                   </div>
+                   </Field>
                 </div>
               </CardContent>
             </Card>
@@ -301,9 +338,9 @@ export default function EditBookPage() {
               </Button>
             </div>
             
-            {error && (
+            {apiError && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-semibold rounded-lg">
-                {error}
+                {apiError}
               </div>
             )}
           </div>

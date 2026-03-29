@@ -10,6 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ArrowLeftIcon, UploadCloudIcon, XIcon, Loader2Icon, CheckCircle2Icon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { Field, FieldError } from "@/components/ui/field";
+
+const categorySchema = z.object({
+  name: z.string().min(1, "Category name is required"),
+  image: z.any().optional(),
+});
 
 export default function EditCategoryPage() {
   const router = useRouter();
@@ -23,7 +30,8 @@ export default function EditCategoryPage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -36,7 +44,7 @@ export default function EditCategoryPage() {
         setIsLoading(false);
       } catch (error: any) {
         console.error("Failed to fetch category:", error);
-        setError("Category not found or failed to load.");
+        setApiError("Category not found or failed to load.");
         setIsLoading(false);
       }
     };
@@ -47,13 +55,12 @@ export default function EditCategoryPage() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       if (selectedFile.size > 2 * 1024 * 1024) {
-         setError("Image size should be less than 2MB");
+         setErrors({ image: "Image size should be less than 2MB" });
          return;
       }
       setFile(selectedFile);
-      const objectUrl = URL.createObjectURL(selectedFile);
-      setPreview(objectUrl);
-      setError(null);
+      setPreview(URL.createObjectURL(selectedFile));
+      setErrors({});
     }
   };
 
@@ -65,13 +72,20 @@ export default function EditCategoryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) {
-        setError("Category name is required");
-        return;
+    
+    const result = categorySchema.safeParse({ name, image: file });
+    if (!result.success) {
+      const fieldErrors: any = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
     }
 
     setIsSubmitting(true);
-    setError(null);
+    setErrors({});
+    setApiError(null);
     setSuccess(false);
     
     try {
@@ -89,7 +103,7 @@ export default function EditCategoryPage() {
       }, 1500);
     } catch (error: any) {
       console.error("Failed to update category:", error);
-      setError(error.message || "Failed to update category.");
+      setApiError(error.message || "Failed to update category.");
     } finally {
       setIsSubmitting(false);
     }
@@ -135,17 +149,17 @@ export default function EditCategoryPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="space-y-2">
+            <Field>
               <Label htmlFor="name" className="text-sm font-semibold">Category Name</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
-                className="h-10 border-border/60 focus:ring-primary/20"
+                className={cn("h-10 border-border/60 focus:ring-primary/20", errors.name ? "border-destructive" : "")}
                 placeholder="Ex. Web Development"
               />
-            </div>
+              {errors.name && <FieldError errors={[{ message: errors.name }]} />}
+            </Field>
 
             <div className="space-y-4">
               <Label className="text-sm font-semibold">Category image</Label>
@@ -160,13 +174,16 @@ export default function EditCategoryPage() {
                    </div>
                 )}
                 
-                <div className="space-y-2">
+                <Field className="space-y-2">
                     <p className="text-[10px] text-primary font-bold uppercase tracking-widest pl-1">
                        {preview ? "New preview" : "Upload new"}
                     </p>
                     {!preview ? (
                         <div 
-                          className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl h-40 cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all border-border/60 group"
+                          className={cn(
+                             "flex flex-col items-center justify-center border-2 border-dashed rounded-xl h-40 cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all border-border/60 group",
+                             errors.image ? "border-destructive/50" : ""
+                          )}
                           onClick={() => fileInputRef.current?.click()}
                         >
                           <div className="bg-muted p-2 rounded-full group-hover:bg-primary/10 transition-colors">
@@ -197,14 +214,15 @@ export default function EditCategoryPage() {
                             </div>
                         </div>
                     )}
-                </div>
+                    {errors.image && <FieldError errors={[{ message: errors.image }]} />}
+                </Field>
               </div>
               <p className="text-[11px] text-muted-foreground italic">Note: Image update may require additional backend support.</p>
             </div>
 
-            {error && (
+            {apiError && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md animate-shake">
-                {error}
+                {apiError}
               </div>
             )}
 

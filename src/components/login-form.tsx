@@ -24,6 +24,7 @@ import { Loader2, AlertCircle, Info } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
+import { authClient } from "@/lib/auth-client";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -82,17 +83,40 @@ export function LoginForm({
     // API call
     try {
       setApiError(null);
-      await authApi.login(result.data);
+      const session = await authApi.login(result.data);
       
       // Update global auth state immediately
       await refreshSession();
       
-      // Successfully logged in - redirect to specified URL or home
-      const redirectUrl = redirect || "/";
-      router.push(redirectUrl);
+      // User role-based redirection
+      const userRole = session.user?.role;
+      if (userRole === "ADMIN" || userRole === "SUPERADMIN") {
+        router.push("/dashboard");
+      } else {
+        router.push("/");
+      }
+      
       router.refresh();
     } catch (error: any) {
       setApiError(error.message || "Invalid email or password.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsSubmitting(true);
+      setApiError(null);
+      
+      // We will handle role-based redirection on the homepage or dashboard 
+      // since social login is a full page redirect.
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: window.location.origin + "/dashboard", // Default to admin-dashboard, proxy will handle users
+      });
+    } catch (error: any) {
+      setApiError(error.message || "Failed to login with Google.");
     } finally {
       setIsSubmitting(false);
     }
@@ -158,7 +182,15 @@ export function LoginForm({
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Login
                 </Button>
-                <Button variant="outline" type="button" disabled={isSubmitting}>
+                <Button 
+                   variant="outline" 
+                   type="button" 
+                   disabled={isSubmitting}
+                   onClick={handleGoogleLogin}
+                >
+                  <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                    <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                  </svg>
                   Login with Google
                 </Button>
                 <FieldDescription className="text-center">

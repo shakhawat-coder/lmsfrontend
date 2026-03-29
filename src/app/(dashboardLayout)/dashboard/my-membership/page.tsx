@@ -35,7 +35,12 @@ export default function MyMembershipPage() {
         ]);
         
         if (membershipData) {
-          setMembership((membershipData as any).data || membershipData);
+          const actualData = (membershipData as any).data || membershipData;
+          if (actualData && actualData.id) {
+            setMembership(actualData);
+          } else {
+            setMembership(null);
+          }
         }
         setPlans(Array.isArray(plansData) ? plansData : (plansData as any).data || []);
       } catch (error) {
@@ -59,7 +64,7 @@ export default function MyMembershipPage() {
     );
   }
 
-  const getPlanIcon = (planName: string) => {
+  const getPlanIcon = (planName: string = "") => {
     switch (planName.toUpperCase()) {
       case "GOLD": return <Crown className="h-5 w-5 text-amber-500" />;
       case "SILVER": return <Zap className="h-5 w-5 text-slate-400" />;
@@ -67,8 +72,8 @@ export default function MyMembershipPage() {
     }
   };
 
-  const isExpiringSoon = membership?.endDate && 
-    new Date(membership.endDate).getTime() < Date.now() + 7 * 24 * 60 * 60 * 1000;
+  const isExpiringSoon = !!(membership?.endDate && 
+    new Date(membership.endDate).getTime() < Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   return (
     <div className="space-y-8 pb-10">
@@ -81,7 +86,7 @@ export default function MyMembershipPage() {
         </p>
       </div>
 
-      {membership ? (
+      {membership && membership.id ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -152,7 +157,7 @@ export default function MyMembershipPage() {
                   </div>
                   <div>
                     <p className="text-muted-foreground text-xs uppercase font-semibold">Plan Price</p>
-                    <p className="font-medium">${membership.price.toFixed(2)}</p>
+                    <p className="font-medium">${Number(membership.price || 0).toFixed(2)}</p>
                   </div>
                 </div>
               </div>

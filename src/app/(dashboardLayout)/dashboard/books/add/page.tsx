@@ -10,6 +10,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowLeftIcon, UploadCloudIcon, XIcon, Loader2Icon } from "lucide-react";
 import Link from "next/link";
+import { z } from "zod";
+import { Field, FieldError } from "@/components/ui/field";
+import { cn } from "@/lib/utils";
+
+const bookSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  author: z.string().min(1, "Author is required"),
+  categoryId: z.string().min(1, "Category is required"),
+  isbn: z.string().optional(),
+  language: z.string().optional(),
+  year: z.string().optional(),
+  pages: z.string().refine(v => !v || !isNaN(Number(v)), "Pages must be a number").optional(),
+  description: z.string().optional(),
+  image: z.any().optional(),
+});
 
 export default function AddBookPage() {
   const router = useRouter();
@@ -30,7 +45,8 @@ export default function AddBookPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -55,12 +71,12 @@ export default function AddBookPage() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       if (selectedFile.size > 2 * 1024 * 1024) {
-         setError("Cover image size should be less than 2MB");
+         setErrors({ image: "Cover image size should be less than 2MB" });
          return;
       }
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
-      setError(null);
+      setErrors({});
     }
   };
 
@@ -72,13 +88,20 @@ export default function AddBookPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.author || !formData.categoryId) {
-        setError("Title, Author, and Category are required");
-        return;
+    
+    const result = bookSchema.safeParse({ ...formData, image: file });
+    if (!result.success) {
+      const fieldErrors: any = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
     }
 
     setIsSubmitting(true);
-    setError(null);
+    setErrors({});
+    setApiError(null);
     
     try {
       const fd = new FormData();
@@ -97,7 +120,7 @@ export default function AddBookPage() {
       router.refresh();
     } catch (error: any) {
       console.error("Failed to add book:", error);
-      setError(error.message || "Failed to add book. Please try again.");
+      setApiError(error.message || "Failed to add book. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -126,35 +149,41 @@ export default function AddBookPage() {
                 <CardDescription>Major details about the book</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
+                <Field>
                   <Label htmlFor="title" className="text-sm font-semibold text-foreground/80">Book Title <span className="text-destructive">*</span></Label>
-                  <Input id="title" value={formData.title} onChange={handleInputChange} placeholder="Ex. Clean Code" required className="h-10 border-border/60" />
-                </div>
+                  <Input id="title" value={formData.title} onChange={handleInputChange} placeholder="Ex. Clean Code" className={cn("h-10 border-border/60", errors.title ? "border-destructive" : "")} />
+                  {errors.title && <FieldError errors={[{ message: errors.title }]} />}
+                </Field>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <Field>
                     <Label htmlFor="author" className="text-sm font-semibold text-foreground/80">Author <span className="text-destructive">*</span></Label>
-                    <Input id="author" value={formData.author} onChange={handleInputChange} placeholder="Robert C. Martin" required className="h-10 border-border/60" />
-                  </div>
-                  <div className="space-y-2">
+                    <Input id="author" value={formData.author} onChange={handleInputChange} placeholder="Robert C. Martin" className={cn("h-10 border-border/60", errors.author ? "border-destructive" : "")} />
+                    {errors.author && <FieldError errors={[{ message: errors.author }]} />}
+                  </Field>
+                  <Field>
                     <Label htmlFor="categoryId" className="text-sm font-semibold text-foreground/80">Category <span className="text-destructive">*</span></Label>
                     <select
                       id="categoryId"
-                      className="flex h-10 w-full rounded-md border border-border/60 bg-transparent px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-border/60 bg-transparent px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/20",
+                        errors.categoryId ? "border-destructive" : ""
+                      )}
                       value={formData.categoryId}
                       onChange={handleInputChange}
-                      required
                     >
                       <option value="">Select a category</option>
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                       ) )}
                     </select>
-                  </div>
+                    {errors.categoryId && <FieldError errors={[{ message: errors.categoryId }]} />}
+                  </Field>
                 </div>
-                <div className="space-y-2">
+                <Field>
                   <Label htmlFor="description" className="text-sm font-semibold text-foreground/80">Description</Label>
-                  <Textarea id="description" value={formData.description} onChange={handleInputChange} placeholder="A short overview of the book contents..." rows={4} className="border-border/60 resize-none" />
-                </div>
+                  <Textarea id="description" value={formData.description} onChange={handleInputChange} placeholder="A short overview of the book contents..." rows={4} className={cn("border-border/60 resize-none", errors.description ? "border-destructive" : "")} />
+                  {errors.description && <FieldError errors={[{ message: errors.description }]} />}
+                </Field>
               </CardContent>
             </Card>
 
@@ -164,22 +193,26 @@ export default function AddBookPage() {
                 <CardDescription>Technical details and identification</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4 pt-0">
-                <div className="space-y-2">
+                <Field>
                   <Label htmlFor="isbn" className="text-sm font-semibold text-foreground/80">ISBN</Label>
-                  <Input id="isbn" value={formData.isbn} onChange={handleInputChange} placeholder="13-digit code" className="h-10 border-border/60" />
-                </div>
-                <div className="space-y-2">
+                  <Input id="isbn" value={formData.isbn} onChange={handleInputChange} placeholder="13-digit code" className={cn("h-10 border-border/60", errors.isbn ? "border-destructive" : "")} />
+                  {errors.isbn && <FieldError errors={[{ message: errors.isbn }]} />}
+                </Field>
+                <Field>
                   <Label htmlFor="language" className="text-sm font-semibold text-foreground/80">Language</Label>
-                  <Input id="language" value={formData.language} onChange={handleInputChange} className="h-10 border-border/60" />
-                </div>
-                <div className="space-y-2">
+                  <Input id="language" value={formData.language} onChange={handleInputChange} className={cn("h-10 border-border/60", errors.language ? "border-destructive" : "")} />
+                  {errors.language && <FieldError errors={[{ message: errors.language }]} />}
+                </Field>
+                <Field>
                   <Label htmlFor="year" className="text-sm font-semibold text-foreground/80">Publish Year</Label>
-                  <Input id="year" value={formData.year} onChange={handleInputChange} placeholder="2023" className="h-10 border-border/60" />
-                </div>
-                <div className="space-y-2">
+                  <Input id="year" value={formData.year} onChange={handleInputChange} placeholder="2023" className={cn("h-10 border-border/60", errors.year ? "border-destructive" : "")} />
+                  {errors.year && <FieldError errors={[{ message: errors.year }]} />}
+                </Field>
+                <Field>
                   <Label htmlFor="pages" className="text-sm font-semibold text-foreground/80">Total Pages</Label>
-                  <Input id="pages" type="number" value={formData.pages} onChange={handleInputChange} placeholder="350" className="h-10 border-border/60" />
-                </div>
+                  <Input id="pages" type="number" value={formData.pages} onChange={handleInputChange} placeholder="350" className={cn("h-10 border-border/60", errors.pages ? "border-destructive" : "")} />
+                  {errors.pages && <FieldError errors={[{ message: errors.pages }]} />}
+                </Field>
               </CardContent>
             </Card>
           </div>
@@ -189,39 +222,45 @@ export default function AddBookPage() {
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-center">Cover Image</CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col items-center">
-                {!preview ? (
-                  <div 
-                    className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl w-full aspect-[3/4] cursor-pointer hover:bg-accent/50 hover:border-primary/50 transition-all border-border/60 group px-4 text-center"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <UploadCloudIcon className="h-10 w-10 text-muted-foreground/60 transition-transform group-hover:-translate-y-1" />
-                    <p className="mt-4 font-semibold text-sm">Upload Cover</p>
-                    <p className="text-xs text-muted-foreground mt-1 underline">Click to browse</p>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                ) : (
-                  <div className="relative group rounded-xl overflow-hidden border border-border shadow-xl w-full aspect-[3/4]">
-                      <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                          <Button 
-                            type="button" 
-                            variant="destructive" 
-                            size="icon" 
-                            className="h-9 w-9 shadow-xl rounded-full" 
-                            onClick={removeFile}
-                          >
-                              <XIcon className="h-4 w-4" />
-                          </Button>
-                      </div>
-                  </div>
-                )}
+               <CardContent className="flex flex-col items-center">
+                <Field className="w-full">
+                  {!preview ? (
+                    <div 
+                      className={cn(
+                        "flex flex-col items-center justify-center border-2 border-dashed rounded-xl w-full aspect-[3/4] cursor-pointer hover:bg-accent/50 hover:border-primary/50 transition-all border-border/60 group px-4 text-center",
+                        errors.image ? "border-destructive/50" : ""
+                      )}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <UploadCloudIcon className="h-10 w-10 text-muted-foreground/60 transition-transform group-hover:-translate-y-1" />
+                      <p className="mt-4 font-semibold text-sm">Upload Cover</p>
+                      <p className="text-xs text-muted-foreground mt-1 underline">Click to browse</p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative group rounded-xl overflow-hidden border border-border shadow-xl w-full aspect-[3/4]">
+                        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="icon" 
+                              className="h-9 w-9 shadow-xl rounded-full" 
+                              onClick={removeFile}
+                            >
+                                <XIcon className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                  )}
+                  {errors.image && <FieldError errors={[{ message: errors.image }]} />}
+                </Field>
                 {file && <p className="text-[10px] text-muted-foreground truncate max-w-full px-2 mt-2">Ready: {file.name}</p>}
               </CardContent>
             </Card>
@@ -242,9 +281,9 @@ export default function AddBookPage() {
               </Button>
             </div>
             
-            {error && (
+            {apiError && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg animate-in fade-in slide-in-from-top-1">
-                {error}
+                {apiError}
               </div>
             )}
           </div>

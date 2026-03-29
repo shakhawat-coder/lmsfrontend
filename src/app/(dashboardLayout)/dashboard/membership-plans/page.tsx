@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircleIcon, PencilIcon, Trash2Icon, CreditCardIcon, ArrowLeftIcon, SaveIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { motion, AnimatePresence } from "motion/react";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +29,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Field, FieldError } from "@/components/ui/field";
+import { z } from "zod";
+
+const planSchema = z.object({
+  name: z.enum(["BASIC", "SILVER", "GOLD"]),
+  price: z.number().min(0, "Price must be at least 0"),
+  borrowLimit: z.number().min(0, "Borrow limit must be at least 0"),
+  durationDays: z.number().min(1, "Duration must be at least 1 day"),
+  description: z.string().min(1, "Description is required"),
+  interval: z.string().min(1, "Interval is required"),
+  features: z.array(z.string().min(1, "Feature description cannot be empty")).min(1, "At least one feature is required"),
+});
 
 export default function MembershipPlansPage() {
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
@@ -43,6 +56,7 @@ export default function MembershipPlansPage() {
     interval: "/month",
     features: [""] as string[]
   });
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
 
   const fetchPlans = async () => {
     setIsLoading(true);
@@ -85,24 +99,38 @@ export default function MembershipPlansPage() {
       });
     }
     setView("form");
+    setErrors({});
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const payload = {
-        ...formData,
-        price: Number(formData.price) || 0,
-        borrowLimit: Number(formData.borrowLimit) || 0,
-        durationDays: Number(formData.durationDays) || 0,
-        features: formData.features.filter(f => f.trim().length > 0)
-      };
+    
+    const payload = {
+      ...formData,
+      price: Number(formData.price) || 0,
+      borrowLimit: Number(formData.borrowLimit) || 0,
+      durationDays: Number(formData.durationDays) || 0,
+      features: formData.features.filter(f => f.trim().length > 0)
+    };
 
+    const result = planSchema.safeParse(payload);
+    if (!result.success) {
+      const fieldErrors: any = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+
+    try {
       if (editingPlan) {
-        await membershipPlanApi.update(editingPlan.id, payload);
+        await membershipPlanApi.update(editingPlan.id, result.data);
         alert("Membership plan updated successfully");
       } else {
-        await membershipPlanApi.create(payload);
+        await membershipPlanApi.create(result.data);
         alert("Membership plan created successfully");
       }
       setView("list");
@@ -256,7 +284,7 @@ export default function MembershipPlansPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                    <Field>
                       <Label htmlFor="price">Price ($)</Label>
                       <Input
                         id="price"
@@ -264,57 +292,62 @@ export default function MembershipPlansPage() {
                         step="0.01"
                         value={formData.price}
                         onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value === "" ? "" : parseFloat(e.target.value) }))}
-                        required
+                        className={errors.price ? "border-destructive" : ""}
                       />
-                    </div>
-                    <div className="space-y-2">
+                      {errors.price && <FieldError errors={[{ message: errors.price }]} />}
+                    </Field>
+                    <Field>
                       <Label htmlFor="borrowLimit">Borrow Limit</Label>
                       <Input
                         id="borrowLimit"
                         type="number"
                         value={formData.borrowLimit}
                         onChange={(e) => setFormData(prev => ({ ...prev, borrowLimit: e.target.value === "" ? "" : parseInt(e.target.value) }))}
-                        required
+                        className={errors.borrowLimit ? "border-destructive" : ""}
                       />
-                    </div>
+                      {errors.borrowLimit && <FieldError errors={[{ message: errors.borrowLimit }]} />}
+                    </Field>
                   </div>
 
-                  <div className="space-y-2">
+                  <Field>
                     <Label htmlFor="description">Description (Short)</Label>
                     <Input
                       id="description"
                       type="text"
                       value={formData.description}
                       onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      required
+                      className={errors.description ? "border-destructive" : ""}
                     />
-                  </div>
+                    {errors.description && <FieldError errors={[{ message: errors.description }]} />}
+                  </Field>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                    <Field>
                       <Label htmlFor="durationDays">Duration (Days)</Label>
                       <Input
                         id="durationDays"
                         type="number"
                         value={formData.durationDays}
                         onChange={(e) => setFormData(prev => ({ ...prev, durationDays: e.target.value === "" ? "" : parseInt(e.target.value) }))}
-                        required
+                        className={errors.durationDays ? "border-destructive" : ""}
                       />
-                    </div>
-                    <div className="space-y-2">
+                      {errors.durationDays && <FieldError errors={[{ message: errors.durationDays }]} />}
+                    </Field>
+                    <Field>
                       <Label htmlFor="interval">Interval (Text)</Label>
                       <Input
                         id="interval"
                         type="text"
                         value={formData.interval}
                         onChange={(e) => setFormData(prev => ({ ...prev, interval: e.target.value }))}
-                        required
                         placeholder="e.g. /month"
+                        className={errors.interval ? "border-destructive" : ""}
                       />
-                    </div>
+                      {errors.interval && <FieldError errors={[{ message: errors.interval }]} />}
+                    </Field>
                   </div>
 
-                  <div className="space-y-3 pt-2">
+                   <div className="space-y-3 pt-2">
                     <div className="flex justify-between items-center mb-1">
                       <Label>Include Plan Features</Label>
                       <Button
@@ -329,31 +362,33 @@ export default function MembershipPlansPage() {
                     </div>
                     <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                       {formData.features.map((feature, idx) => (
-                        <div key={idx} className="flex gap-2 items-center">
-                          <Input
-                            value={feature}
-                            onChange={(e) => {
-                              const newFeatures = [...formData.features];
-                              newFeatures[idx] = e.target.value;
-                              setFormData(prev => ({ ...prev, features: newFeatures }));
-                            }}
-                            placeholder={`e.g. Borrow up to ${formData.borrowLimit} books`}
-                            required
-                            className="bg-transparent"
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            className="text-destructive shrink-0 h-9 w-9 p-0"
-                            onClick={() => {
-                              const newFeatures = formData.features.filter((_, i) => i !== idx);
-                              setFormData(prev => ({ ...prev, features: newFeatures.length > 0 ? newFeatures : [""] }));
-                            }}
-                          >
-                            <Trash2Icon className="h-4 w-4" />
-                          </Button>
+                        <div key={idx} className="flex flex-col gap-1">
+                          <div className="flex gap-2 items-center">
+                            <Input
+                              value={feature}
+                              onChange={(e) => {
+                                const newFeatures = [...formData.features];
+                                newFeatures[idx] = e.target.value;
+                                setFormData(prev => ({ ...prev, features: newFeatures }));
+                              }}
+                              placeholder={`e.g. Borrow up to ${formData.borrowLimit} books`}
+                              className={cn("bg-transparent", errors.features && !feature ? "border-destructive" : "")}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="text-destructive shrink-0 h-9 w-9 p-0"
+                              onClick={() => {
+                                const newFeatures = formData.features.filter((_, i) => i !== idx);
+                                setFormData(prev => ({ ...prev, features: newFeatures.length > 0 ? newFeatures : [""] }));
+                              }}
+                            >
+                              <Trash2Icon className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
+                      {errors.features && <FieldError errors={[{ message: errors.features }]} />}
                     </div>
                   </div>
 

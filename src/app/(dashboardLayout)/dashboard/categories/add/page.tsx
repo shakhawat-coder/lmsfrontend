@@ -10,6 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ArrowLeftIcon, UploadCloudIcon, XIcon, Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Field, FieldError } from "@/components/ui/field";
+import { z } from "zod";
+
+const categorySchema = z.object({
+  name: z.string().min(1, "Category name is required"),
+  image: z.any().refine((file) => file instanceof File, "Category image is required"),
+});
 
 export default function AddCategoryPage() {
   const router = useRouter();
@@ -18,19 +25,19 @@ export default function AddCategoryPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       if (selectedFile.size > 2 * 1024 * 1024) {
-         setError("Image size should be less than 2MB");
+         setErrors({ image: "Image size should be less than 2MB" });
          return;
       }
       setFile(selectedFile);
-      const objectUrl = URL.createObjectURL(selectedFile);
-      setPreview(objectUrl);
-      setError(null);
+      setPreview(URL.createObjectURL(selectedFile));
+      setErrors({});
     }
   };
 
@@ -42,21 +49,24 @@ export default function AddCategoryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) {
-        setError("Category name is required");
-        return;
-    }
-    if (!file) {
-        setError("Category image is required");
-        return;
+    
+    const result = categorySchema.safeParse({ name, image: file });
+    if (!result.success) {
+      const fieldErrors: any = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
     }
 
     setIsSubmitting(true);
-    setError(null);
+    setErrors({});
+    setApiError(null);
     
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("image", file);
+    formData.append("image", file as File);
 
     try {
       await categoryApi.create(formData);
@@ -64,7 +74,7 @@ export default function AddCategoryPage() {
       router.refresh(); // Trigger a revalidation of categories list
     } catch (error: any) {
       console.error("Failed to create category:", error);
-      setError(error.message || "Failed to create category. Please try again.");
+      setApiError(error.message || "Failed to create category. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,25 +101,25 @@ export default function AddCategoryPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
+            <Field>
               <Label htmlFor="name" className="text-sm font-semibold">Category Name</Label>
               <Input
                 id="name"
                 placeholder="Ex. Web Development, UI/UX Design..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
-                className="h-10 border-border/60 focus:ring-primary/20"
+                className={cn("h-10 border-border/60 focus:ring-primary/20", errors.name ? "border-destructive" : "")}
               />
-            </div>
+              {errors.name && <FieldError errors={[{ message: errors.name }]} />}
+            </Field>
 
-            <div className="space-y-3">
+            <Field className="space-y-3">
               <Label className="text-sm font-semibold">Category Image</Label>
               {!preview ? (
                 <div 
                   className={cn(
                     "flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-10 cursor-pointer hover:bg-accent/50 hover:border-primary/50 transition-all group",
-                    error && !file ? "border-destructive/50" : "border-border"
+                    errors.image ? "border-destructive/50" : "border-border"
                   )}
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -152,11 +162,12 @@ export default function AddCategoryPage() {
                     </div>
                 </div>
               )}
-            </div>
+              {errors.image && <FieldError errors={[{ message: errors.image }]} />}
+            </Field>
 
-            {error && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md animate-in fade-in slide-in-from-top-1">
-                {error}
+            {apiError && (
+              <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md mb-4">
+                {apiError}
               </div>
             )}
 
