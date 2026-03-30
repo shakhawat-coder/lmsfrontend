@@ -74,9 +74,9 @@ const ContactPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const result = contactSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const fieldErrors: any = {};
       result.error.issues.forEach((err) => {
@@ -117,14 +117,14 @@ const ContactPage = () => {
       {/* Hero Header */}
       <section className="bg-slate-50 dark:bg-slate-930 py-20 border-b border-gray-100 dark:border-gray-800">
         <div className="container px-4 text-center">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight"
           >
             Get in <span className="text-blue-600">Touch</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -138,7 +138,7 @@ const ContactPage = () => {
       <section className="py-24 container px-4">
         <div className="grid lg:grid-cols-12 gap-12">
           {/* Contact Information */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -158,7 +158,7 @@ const ContactPage = () => {
                 { icon: MapPin, label: "Visit Us", value: "123 Library Way, Knowledge City, NY 10001", color: "text-amber-600 bg-amber-50" },
                 { icon: Clock, label: "Opening Hours", value: "Mon - Fri: 9am - 6pm EST", color: "text-purple-600 bg-purple-50" },
               ].map((item, i) => (
-                <motion.div 
+                <motion.div
                   key={i}
                   variants={itemVariants}
                   className="flex items-start gap-4 group p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
@@ -184,18 +184,17 @@ const ContactPage = () => {
                   </Button>
                 ))}
               </div>
-            </motion.div> 
+            </motion.div>
           </motion.div>
 
           {/* Contact Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-7"
           >
             <Card className="border-none shadow-2xl rounded-[2rem] overflow-hidden">
-              <div className="bg-blue-600 h-2 w-full" />
               <CardHeader className="p-8 pb-4">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-blue-100 rounded-lg">
@@ -210,7 +209,7 @@ const ContactPage = () => {
               </CardHeader>
               <CardContent className="p-8 pt-4">
                 {isSubmitted ? (
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="text-center py-12"
@@ -232,9 +231,9 @@ const ContactPage = () => {
                       <div className="grid md:grid-cols-2 gap-6">
                         <Field>
                           <FieldLabel htmlFor="name">Full Name</FieldLabel>
-                          <Input 
-                            id="name" 
-                            placeholder="John Doe" 
+                          <Input
+                            id="name"
+                            placeholder="John Doe"
                             value={formData.name}
                             onChange={handleChange}
                             aria-invalid={!!errors.name}
@@ -243,9 +242,9 @@ const ContactPage = () => {
                         </Field>
                         <Field>
                           <FieldLabel htmlFor="email">Email Address</FieldLabel>
-                          <Input 
-                            id="email" 
-                            placeholder="m@example.com" 
+                          <Input
+                            id="email"
+                            placeholder="m@example.com"
                             type="email"
                             value={formData.email}
                             onChange={handleChange}
@@ -257,9 +256,9 @@ const ContactPage = () => {
 
                       <Field>
                         <FieldLabel htmlFor="subject">Subject</FieldLabel>
-                        <Input 
-                          id="subject" 
-                          placeholder="How can we help you?" 
+                        <Input
+                          id="subject"
+                          placeholder="How can we help you?"
                           value={formData.subject}
                           onChange={handleChange}
                           aria-invalid={!!errors.subject}
@@ -269,9 +268,9 @@ const ContactPage = () => {
 
                       <Field>
                         <FieldLabel htmlFor="message">Message</FieldLabel>
-                        <Textarea 
-                          id="message" 
-                          placeholder="Tell us what you need in detail..." 
+                        <Textarea
+                          id="message"
+                          placeholder="Tell us what you need in detail..."
                           className="min-h-[160px] resize-none"
                           value={formData.message}
                           onChange={handleChange}
@@ -285,9 +284,9 @@ const ContactPage = () => {
                         </div>
                       </Field>
 
-                      <Button 
-                        type="submit" 
-                        size="lg" 
+                      <Button
+                        type="submit"
+                        size="lg"
                         className="w-full rounded-2xl py-6 text-lg font-bold shadow-lg shadow-blue-500/20 group hover:shadow-blue-500/40 transition-all"
                         disabled={isSubmitting}
                       >

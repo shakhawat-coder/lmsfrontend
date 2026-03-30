@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Check, CreditCard, Loader2Icon, ArrowLeft, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
@@ -10,12 +10,12 @@ import { membershipPlanApi, MembershipPlan, paymentApi } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import Link from "next/link";
 
-export default function CheckoutPage() {
+function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const planId = searchParams.get("planId");
   const { user, isLoading: authLoading } = useAuth();
-  
+
   const [plan, setPlan] = useState<MembershipPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -39,7 +39,7 @@ export default function CheckoutPage() {
         const plans = await membershipPlanApi.getAll();
         const plansArray = Array.isArray(plans) ? plans : (plans as any).data || [];
         const selectedPlan = plansArray.find((p: MembershipPlan) => p.id === planId);
-        
+
         if (!selectedPlan) {
           setError("Plan not found. Please select a valid membership plan.");
         } else {
@@ -60,7 +60,7 @@ export default function CheckoutPage() {
 
   const handlePayment = async () => {
     if (!plan || !user) return;
-    
+
     setIsProcessing(true);
     setError(null);
 
@@ -277,3 +277,11 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+const CheckoutPageWrapper = () => (
+  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading checkout...</div>}>
+    <CheckoutPage />
+  </Suspense>
+);
+
+export default CheckoutPageWrapper;

@@ -1,12 +1,13 @@
 "use client";
 
+import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { XCircle, RefreshCw, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 
-export default function PaymentCancelPage() {
+function PaymentCancelPage() {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transactionId");
 
@@ -57,3 +58,12 @@ export default function PaymentCancelPage() {
     </div>
   );
 }
+
+const PaymentCancelPageWrapper = () => (
+  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading payment status...</div>}>
+    <PaymentCancelPage />
+  </Suspense>
+);
+
+export default PaymentCancelPageWrapper;
+

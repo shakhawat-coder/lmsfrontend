@@ -18,6 +18,7 @@ const MembershipPlan = () => {
     const fetchPlans = async () => {
       try {
         const res = await membershipPlanApi.getAll();
+        console.log(res);
         const data = Array.isArray(res) ? res : (res as any).data || [];
         setPlans(data);
       } catch (error) {
@@ -90,66 +91,72 @@ const MembershipPlan = () => {
           </div>
         ) : (
           <div className="flex flex-wrap justify-center gap-10 max-w-7xl mx-auto items-stretch py-10">
-            {plans.map((plan, index) => {
-              const isPopular = plan.name === "SILVER";
-              return (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
-                  whileHover={{ y: -10 }}
-                  className="flex"
-                >
-                  <div className={`relative w-full md:w-[360px] bg-white rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-gray-100 shadow-xl shadow-gray-200/50'
-                    } p-10 flex flex-col w-full h-full transition-all duration-500`}
+            {plans.length > 0 ? (
+              plans.map((plan, index) => {
+                const isPopular = plan.name === "SILVER";
+                return (
+                  <motion.div
+                    key={plan.id}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.5, delay: index * 0.2 }}
+                    whileHover={{ y: -10 }}
+                    className="flex"
                   >
-                    {isPopular && (
-                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest py-2 px-6 rounded-full shadow-2xl shadow-blue-500/40">
-                          Recommended
-                        </span>
-                      </div>
-                    )}
-  
-                    <div className="mb-8">
-                      <h3 className="text-3xl font-black text-gray-900 mb-2 capitalize italic">{plan.name.toLowerCase()}</h3>
-                      <p className="text-gray-500 font-medium leading-relaxed text-sm">{plan.description}</p>
-                    </div>
-  
-                    <div className="mb-10 flex items-baseline gap-1">
-                      <span className="text-5xl font-black text-gray-900 tracking-tighter">{getPriceDisplay(plan.price)}</span>
-                      <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">/ {plan.interval}</span>
-                    </div>
-  
-                    <div className="space-y-5 flex-1 mb-12">
-                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest border-b border-blue-50 pb-2 inline-block">Plan Features</p>
-                      <ul className="space-y-4">
-                        {plan.features?.map((feature: string, i: number) => (
-                          <li key={i} className="flex items-center gap-4 group">
-                            <div className="p-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600">
-                               <Check className="h-3 w-3" />
-                            </div>
-                            <span className="text-gray-700 font-bold text-sm group-hover:text-blue-600 transition-colors">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-  
-                    <button
-                      onClick={() => handlePlanSelect(plan.id)}
-                      className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${isPopular
-                          ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/40 hover:-translate-y-1'
-                          : 'bg-gray-900 text-white hover:bg-black hover:shadow-gray-900/40'
-                        }`}
+                    <div className={`relative w-full md:w-[360px] bg-white rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-gray-100 shadow-xl shadow-gray-200/50'
+                      } p-10 flex flex-col w-full h-full transition-all duration-500`}
                     >
-                      {getButtonText(plan.name)}
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
+                      {isPopular && (
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                          <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest py-2 px-6 rounded-full shadow-2xl shadow-blue-500/40">
+                            Recommended
+                          </span>
+                        </div>
+                      )}
+    
+                      <div className="mb-8">
+                        <h3 className="text-3xl font-black text-gray-900 mb-2 capitalize italic">{plan.name.toLowerCase()}</h3>
+                        <p className="text-gray-500 font-medium leading-relaxed text-sm">{plan.description}</p>
+                      </div>
+    
+                      <div className="mb-10 flex items-baseline gap-1">
+                        <span className="text-5xl font-black text-gray-900 tracking-tighter">{getPriceDisplay(plan.price)}</span>
+                        <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">/ {plan.interval}</span>
+                      </div>
+    
+                      <div className="space-y-5 flex-1 mb-12">
+                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest border-b border-blue-50 pb-2 inline-block">Plan Features</p>
+                        <ul className="space-y-4">
+                          {plan.features?.map((feature: string, i: number) => (
+                            <li key={i} className="flex items-center gap-4 group">
+                              <div className="p-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600">
+                                 <Check className="h-3 w-3" />
+                              </div>
+                              <span className="text-gray-700 font-bold text-sm group-hover:text-blue-600 transition-colors">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+    
+                      <button
+                        onClick={() => handlePlanSelect(plan.id)}
+                        className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${isPopular
+                            ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/40 hover:-translate-y-1'
+                            : 'bg-gray-900 text-white hover:bg-black hover:shadow-gray-900/40'
+                          }`}
+                      >
+                        {getButtonText(plan.name)}
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground bg-white p-8 rounded-2xl shadow-sm border">No membership plans available at the moment. Please check back later.</p>
+              </div>
+            )}
           </div>
         )}
       </div>

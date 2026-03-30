@@ -50,6 +50,15 @@ export function LoginForm({
   const message = searchParams.get("message");
   const redirect = searchParams.get("redirect");
 
+  const getSocialCallbackURL = () => {
+    const frontendOrigin =
+      process.env.NEXT_PUBLIC_FRONTEND_URL ||
+      window.location.origin ||
+      "https://booknest-tau-virid.vercel.app";
+    const targetPath = redirect || "/dashboard";
+    return `${frontendOrigin}${targetPath.startsWith("/") ? targetPath : `/${targetPath}`}`;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -65,9 +74,9 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const result = loginSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const fieldErrors: any = {};
       result.error.issues.forEach((err) => {
@@ -83,21 +92,44 @@ export function LoginForm({
     // API call
     try {
       setApiError(null);
+      console.log("Attempting login for:", result.data.email);
       const session = await authApi.login(result.data);
-      
+      console.log("Login response:", session);
+
+      // Store token in localStorage as a primary persistence mechanism for cross-origin setups
+      const sessionData = (session as any);
+      const token = sessionData.token ||
+        sessionData.session?.token ||
+        sessionData.session?.sessionToken ||
+        sessionData.data?.token ||
+        sessionData.data?.session?.sessionToken;
+
+      if (token) {
+        console.log("Token found and stored:", token.substring(0, 5) + "...");
+        localStorage.setItem("token", token);
+        localStorage.setItem("better-auth.session-token", token);
+      } else {
+        console.warn("No token found in login response. Auth might rely purely on cookies.");
+      }
+
       // Update global auth state immediately
       await refreshSession();
-      
+
       // User role-based redirection
-      const userRole = session.user?.role;
+      const userRole = session.user?.role || (session as any).data?.user?.role;
+      console.log("User role:", userRole);
+
       if (userRole === "ADMIN" || userRole === "SUPERADMIN") {
         router.push("/dashboard");
       } else {
         router.push("/");
       }
-      
-      router.refresh();
+
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } catch (error: any) {
+      console.error("Login error details:", error);
       setApiError(error.message || "Invalid email or password.");
     } finally {
       setIsSubmitting(false);
@@ -108,12 +140,16 @@ export function LoginForm({
     try {
       setIsSubmitting(true);
       setApiError(null);
-      
-      // We will handle role-based redirection on the homepage or dashboard 
+
+      const callbackURL = getSocialCallbackURL();
+
+      // We will handle role-based redirection on the homepage or dashboard
       // since social login is a full page redirect.
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: window.location.origin + "/dashboard", // Default to admin-dashboard, proxy will handle users
+        callbackURL,
+        newUserCallbackURL: callbackURL,
+        errorCallbackURL: `${window.location.origin}/login?error=social`,
       });
     } catch (error: any) {
       setApiError(error.message || "Failed to login with Google.");
@@ -168,9 +204,9 @@ export function LoginForm({
                     Forgot your password?
                   </Link>
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
                   value={formData.password}
                   onChange={handleChange}
                   className={errors.password ? "border-destructive" : ""}
@@ -182,11 +218,11 @@ export function LoginForm({
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Login
                 </Button>
-                <Button 
-                   variant="outline" 
-                   type="button" 
-                   disabled={isSubmitting}
-                   onClick={handleGoogleLogin}
+                <Button
+                  variant="outline"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleGoogleLogin}
                 >
                   <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                     <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>

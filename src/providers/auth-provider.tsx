@@ -18,11 +18,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshSession = useCallback(async () => {
     try {
+      console.log("Refreshing session...");
       const session = await authApi.getCurrentUser();
+      console.log("Session fetch result:", session);
+      
       if (session && session.user) {
         setUser(session.user);
+        console.log("User set in AuthProvider:", session.user.email);
       } else {
         setUser(null);
+        console.log("No active session found.");
       }
     } catch (error) {
       console.error("Failed to fetch session:", error);

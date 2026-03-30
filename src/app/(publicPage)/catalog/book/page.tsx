@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { Suspense, useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookCard from '@/components/commonComponents/BookCard';
 import CatalogSidebar from '../../../../components/modules/bookPage/CatalogSidebar';
@@ -252,4 +252,10 @@ const AllBooksPage = () => {
     )
 }
 
-export default AllBooksPage;
+const AllBooksPageWrapper = () => (
+    <Suspense fallback={<div className="container mx-auto px-4 py-8">Loading books...</div>}>
+        <AllBooksPage />
+    </Suspense>
+);
+
+export default AllBooksPageWrapper;

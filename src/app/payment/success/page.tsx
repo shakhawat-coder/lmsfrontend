@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, Loader2Icon, BookOpen, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
@@ -9,10 +9,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { paymentApi, MembershipPlan } from "@/lib/api";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transactionId");
-  
+
   const [isVerifying, setIsVerifying] = useState(true);
   const [paymentVerified, setPaymentVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -178,3 +178,12 @@ export default function PaymentSuccessPage() {
     </div>
   );
 }
+
+const PaymentSuccessPageWrapper = () => (
+  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading payment confirmation...</div>}>
+    <PaymentSuccessPage />
+  </Suspense>
+);
+
+export default PaymentSuccessPageWrapper;
+

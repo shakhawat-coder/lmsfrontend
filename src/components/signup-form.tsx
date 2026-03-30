@@ -66,9 +66,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const result = signupSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const fieldErrors: any = {};
       result.error.issues.forEach((err) => {
@@ -86,7 +86,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       setApiError(null);
       const { confirmPassword, ...signupData } = result.data;
       await authApi.signUp(signupData);
-      
+
       // Successfully signed up - Better Auth sends verification email
       // We might want to redirect to a 'verification-sent' page or login
       router.push("/login?message=Account created! Please check your email to verify.");
@@ -97,13 +97,24 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }
   };
 
+  const getSocialCallbackURL = () => {
+    const frontendOrigin =
+      process.env.NEXT_PUBLIC_FRONTEND_URL ||
+      window.location.origin ||
+      "https://booknest-tau-virid.vercel.app";
+    return `${frontendOrigin}/dashboard`;
+  };
+
   const handleGoogleLogin = async () => {
     try {
       setIsSubmitting(true);
       setApiError(null);
+      const callbackURL = getSocialCallbackURL();
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: window.location.origin + "/dashboard",
+        callbackURL,
+        newUserCallbackURL: callbackURL,
+        errorCallbackURL: `${window.location.origin}/signup?error=social`,
       });
     } catch (error: any) {
       setApiError(error.message || "Failed to sign up with Google.");
@@ -131,10 +142,10 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input 
-                id="name" 
-                type="text" 
-                placeholder="John Doe" 
+              <Input
+                id="name"
+                type="text"
+                placeholder="John Doe"
                 value={formData.name}
                 onChange={handleChange}
                 className={errors.name ? "border-destructive" : ""}
@@ -155,9 +166,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input 
-                id="password" 
-                type="password" 
+              <Input
+                id="password"
+                type="password"
                 value={formData.password}
                 onChange={handleChange}
                 className={errors.password ? "border-destructive" : ""}
@@ -168,9 +179,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
               </FieldLabel>
-              <Input 
-                id="confirmPassword" 
-                type="password" 
+              <Input
+                id="confirmPassword"
+                type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className={errors.confirmPassword ? "border-destructive" : ""}
@@ -183,11 +194,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create Account
                 </Button>
-                <Button 
-                   variant="outline" 
-                   type="button" 
-                   disabled={isSubmitting}
-                   onClick={handleGoogleLogin}
+                <Button
+                  variant="outline"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleGoogleLogin}
                 >
                   <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                     <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
