@@ -49,6 +49,7 @@ const Footer = ({
     {
       title: "Services",
       links: [
+        { text: "Membership Plans", url: "/our-plan" },
         { text: "Borrowing", url: "/services/borrowing" },
         { text: "Renewals", url: "/services/renewals" },
         { text: "Reservations", url: "/services/reservations" },

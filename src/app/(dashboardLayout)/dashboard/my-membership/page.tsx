@@ -5,13 +5,13 @@ import { membershipApi, Membership, membershipPlanApi, MembershipPlan } from "@/
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  CheckCircle2, 
-  Calendar, 
-  CreditCard, 
-  ShieldCheck, 
-  Clock, 
-  ArrowRight, 
+import {
+  CheckCircle2,
+  Calendar,
+  CreditCard,
+  ShieldCheck,
+  Clock,
+  ArrowRight,
   Sparkles,
   Zap,
   Crown
@@ -33,7 +33,7 @@ export default function MyMembershipPage() {
           membershipApi.getActive().catch(() => null),
           membershipPlanApi.getAll()
         ]);
-        
+
         if (membershipData) {
           const actualData = (membershipData as any).data || membershipData;
           if (actualData && actualData.id) {
@@ -72,13 +72,13 @@ export default function MyMembershipPage() {
     }
   };
 
-  const isExpiringSoon = !!(membership?.endDate && 
+  const isExpiringSoon = !!(membership?.endDate &&
     new Date(membership.endDate).getTime() < Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   return (
     <div className="space-y-8 pb-10">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
           My Membership
         </h1>
         <p className="text-muted-foreground">
@@ -95,9 +95,9 @@ export default function MyMembershipPage() {
           {/* Current Membership Card */}
           <Card className="md:col-span-8 border-primary/20 shadow-lg overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                <ShieldCheck className="w-32 h-32 text-primary" />
+              <ShieldCheck className="w-32 h-32 text-primary" />
             </div>
-            
+
             <CardHeader className="border-b bg-muted/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -114,7 +114,7 @@ export default function MyMembershipPage() {
                 </Badge>
               </div>
             </CardHeader>
-            
+
             <CardContent className="pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm">
@@ -171,16 +171,16 @@ export default function MyMembershipPage() {
                 </div>
               )}
             </CardContent>
-            
+
             <CardFooter className="bg-muted/30 border-t flex justify-between items-center p-6">
-               <span className="text-xs text-muted-foreground italic">
-                 Last updated: {new Date().toLocaleDateString()}
-               </span>
-               <Link href="/catalog/categories#plans">
-                  <Button variant="outline" className="gap-2 group/btn">
-                    Upgrade Plan <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
-               </Link>
+              <span className="text-xs text-muted-foreground italic">
+                Last updated: {new Date().toLocaleDateString()}
+              </span>
+              <Link href="/catalog/categories#plans">
+                <Button variant="outline" className="gap-2 group/btn">
+                  Upgrade Plan <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
 
@@ -219,9 +219,9 @@ export default function MyMembershipPage() {
         </motion.div>
       ) : (
         <motion.div
-           initial={{ opacity: 0, scale: 0.95 }}
-           animate={{ opacity: 1, scale: 1 }}
-           className="flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-2xl bg-muted/20"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-2xl bg-muted/20"
         >
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
             <ShieldCheck className="h-8 w-8 text-muted-foreground opacity-50" />
@@ -230,71 +230,13 @@ export default function MyMembershipPage() {
           <p className="text-muted-foreground text-center max-w-md mb-8">
             Subscribe to a membership plan to unlock borrowing privileges and exclusive library features.
           </p>
-          <Link href="/catalog/categories#plans">
+          <Link href="/our-plans">
             <Button size="lg" className="rounded-full px-8 gap-2 group shadow-lg">
               Choose a Plan <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
         </motion.div>
       )}
-
-      {/* Recommended Upgrades / Other Plans */}
-      <div className="pt-8 space-y-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          {membership ? "Available Upgrades" : "Available Membership Plans"}
-          <Badge variant="outline" className="font-normal border-primary/30 text-primary">All Plans</Badge>
-        </h2>
-        
-        <div className="grid gap-6 md:grid-cols-3">
-          {plans.filter(p => p.id !== membership?.membershipPlanId).map((plan, i) => (
-            <motion.div
-              key={plan.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Card className="h-full flex flex-col hover:border-primary/50 transition-all duration-300 group overflow-hidden relative">
-                <div className="absolute -right-2 -top-2 opacity-5 group-hover:opacity-10 transition-opacity">
-                   {getPlanIcon(plan.name)}
-                </div>
-                
-                <CardHeader>
-                  <div className="flex justify-between items-center mb-2">
-                    {getPlanIcon(plan.name)}
-                    <Badge variant="outline" className="text-[10px] uppercase tracking-tighter">{plan.durationDays} Days</Badge>
-                  </div>
-                  <CardTitle className="text-lg">{plan.name}</CardTitle>
-                  <CardDescription className="line-clamp-2 min-h-[40px]">{plan.description}</CardDescription>
-                </CardHeader>
-                
-                <CardContent className="flex-1">
-                  <div className="text-3xl font-bold mb-4">
-                    ${plan.price}
-                    <span className="text-sm font-normal text-muted-foreground lowercase"> / {plan.interval || "plan"}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {plan.features?.slice(0, 3).map((f, i) => (
-                       <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                         <CheckCircle2 className="h-3 w-3 text-emerald-500 shrink-0" />
-                         <span className="truncate">{f}</span>
-                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-                
-                <CardFooter className="pt-4 border-t bg-muted/10 group-hover:bg-muted/30 transition-colors">
-                  <Link href={`/dashboard/membership-plans`} className="w-full">
-                    <Button variant="ghost" className="w-full gap-2 text-sm justify-between">
-                      View Details <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

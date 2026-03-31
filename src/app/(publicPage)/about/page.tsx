@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from 'next/navigation';
 import { motion, Variants } from "motion/react";
 import {
   BookOpen,
@@ -46,6 +47,11 @@ const values = [
 ];
 
 const AboutPage = () => {
+  const router = useRouter();
+  const navigate = () => {
+    router.push("/catalog/book");
+  };
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -65,15 +71,15 @@ const AboutPage = () => {
     <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
+          style={{
             backgroundImage: "url('/about_hero_library.png')",
             filter: "brightness(0.5)"
           }}
         />
         <div className="container relative z-10 text-center text-white px-4">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -81,7 +87,7 @@ const AboutPage = () => {
           >
             Empowering Minds <br /> Through <span className="text-blue-400">Knowledge</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -95,7 +101,7 @@ const AboutPage = () => {
       {/* Our Mission Section */}
       <section className="py-24 container px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -121,21 +127,21 @@ const AboutPage = () => {
               ))}
             </div>
             <div className="mt-10">
-              <Button size="lg" className="rounded-full px-8">
+              <Button onClick={navigate} size="lg" className="rounded-full px-8">
                 Explore Our Collection <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </div>
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="relative h-[450px] rounded-3xl overflow-hidden shadow-2xl"
           >
-            <img 
-              src="/library_collaboration.png" 
-              alt="Collaboration" 
+            <img
+              src="/library_collaboration.png"
+              alt="Collaboration"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-blue-600/10 mix-blend-multiply" />
@@ -146,7 +152,7 @@ const AboutPage = () => {
       {/* Stats Section */}
       <section className="bg-slate-50 dark:bg-slate-900/50 py-20">
         <div className="container px-4">
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -154,7 +160,7 @@ const AboutPage = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
           >
             {stats.map((stat, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 variants={itemVariants}
                 className="text-center group"
@@ -173,7 +179,7 @@ const AboutPage = () => {
       {/* Core Values Section */}
       <section className="py-24 container px-4">
         <div className="text-center mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -181,7 +187,7 @@ const AboutPage = () => {
           >
             The Principles That Drive Us
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -192,7 +198,7 @@ const AboutPage = () => {
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {values.map((value, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}

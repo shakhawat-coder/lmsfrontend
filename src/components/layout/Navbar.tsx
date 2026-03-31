@@ -110,6 +110,10 @@ const Navbar = ({
       ],
     },
     {
+      title: "Our Plans",
+      url: "/our-plans",
+    },
+    {
       title: "About Us",
       url: "/about",
     },
@@ -151,7 +155,7 @@ const Navbar = ({
         // If we're already on the books page and clear search, update the URL
         router.push("/catalog/book");
       }
-    }, 500); 
+    }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery, router, pathname]);
 
@@ -198,74 +202,74 @@ const Navbar = ({
               </NavigationMenuList>
             </NavigationMenu>
           </div>
-            <div className="flex items-center gap-2">
-              <form className="relative mr-2" onSubmit={handleSearchSubmit}>
-                <Input 
-                  placeholder="Search books..." 
-                  className="pr-8" 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
-                  <Search className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <form className="relative mr-2" onSubmit={handleSearchSubmit}>
+              <Input
+                placeholder="Search books..."
+                className="pr-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
+                <Search className="h-4 w-4" />
+              </Button>
+            </form>
+
+            {isLoading ? (
+              <div className="h-8 w-20 animate-pulse rounded-md bg-muted"></div>
+            ) : user ? (
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 hover:bg-transparent"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={user.image || ""} alt={user.name} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {user.name?.charAt(0) || <User className="h-4 w-4" />}
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
-              </form>
 
-              {isLoading ? (
-                <div className="h-8 w-20 animate-pulse rounded-md bg-muted"></div>
-              ) : user ? (
-                <div className="relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center gap-2 hover:bg-transparent"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.image || ""} alt={user.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {user.name?.charAt(0) || <User className="h-4 w-4" />}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-
-                  {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1 shadow-lg z-[100]">
-                      <Button asChild variant="ghost" className="w-full justify-start gap-2" size="sm" onClick={() => {
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1 shadow-lg z-[100]">
+                    <Button asChild variant="ghost" className="w-full justify-start gap-2" size="sm" onClick={() => {
+                      setIsDropdownOpen(false);
+                    }}>
+                      <Link href="/dashboard">
+                        <LayoutDashboard className="h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                    <div className="my-1 h-px bg-muted" />
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      size="sm"
+                      onClick={() => {
                         setIsDropdownOpen(false);
-                      }}>
-                        <Link href="/dashboard">
-                          <LayoutDashboard className="h-4 w-4" />
-                          Dashboard
-                        </Link>
-                      </Button>
-                      <div className="my-1 h-px bg-muted" />
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10" 
-                        size="sm"
-                        onClick={() => {
-                          setIsDropdownOpen(false);
-                          handleLogout();
-                        }}
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Logout
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={auth.login.url}>{auth.login.title}</Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                  </Button>
-                </>
-              )}
-            </div>
+                        handleLogout();
+                      }}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link href={auth.login.url}>{auth.login.title}</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                </Button>
+              </>
+            )}
+          </div>
         </nav>
 
         {/* Mobile Menu */}
@@ -299,9 +303,9 @@ const Navbar = ({
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
                   <form className="relative" onSubmit={handleSearchSubmit}>
-                    <Input 
-                      placeholder="Search books..." 
-                      className="pr-8" 
+                    <Input
+                      placeholder="Search books..."
+                      className="pr-8"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -340,8 +344,8 @@ const Navbar = ({
                             Dashboard
                           </Link>
                         </Button>
-                        <Button 
-                          variant="destructive" 
+                        <Button
+                          variant="destructive"
                           className="justify-start gap-2"
                           onClick={handleLogout}
                         >

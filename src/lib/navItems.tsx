@@ -9,7 +9,8 @@ import {
   UserCheckIcon,
   PlusCircleIcon,
   ListIcon,
-  MailIcon
+  MailIcon,
+  BookCopyIcon
 } from "lucide-react";
 
 export interface DashboardLink {
@@ -66,6 +67,12 @@ export const sidebarLinks: DashboardLink[] = [
       { title: "All Books", url: "/dashboard/books", icon: ListIcon },
       { title: "Add Book", url: "/dashboard/books/add", icon: PlusCircleIcon },
     ]
+  },
+  {
+    title: "Borrowings",
+    url: "/dashboard/borrowings",
+    icon: BookCopyIcon,
+    roles: ["ADMIN", "SUPERADMIN"],
   },
   {
     title: "Memberships",

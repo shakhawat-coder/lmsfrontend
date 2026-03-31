@@ -97,7 +97,7 @@ export interface Payment {
  */
 export async function fetchApi<T>(
   endpoint: string,
-  options: RequestInit & { params?: Record<string, string> } = {}
+  options: RequestInit & { params?: Record<string, string> } = {},
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
 
@@ -111,7 +111,7 @@ export async function fetchApi<T>(
 
   if (params) {
     Object.keys(params).forEach((key) =>
-      url.searchParams.append(key, params[key])
+      url.searchParams.append(key, params[key]),
     );
   }
 
@@ -146,7 +146,7 @@ export async function fetchApi<T>(
   } catch (error) {
     console.error("Network error:", error);
     throw new Error(
-      "Failed to connect to server. Please check if the backend is running."
+      "Failed to connect to server. Please check if the backend is running.",
     );
   }
 
@@ -162,7 +162,7 @@ export async function fetchApi<T>(
       if (!response.ok) {
         // Return a meaningful error message instead of the raw text (which might be HTML)
         const error = new Error(
-          `Error ${response.status}: ${response.statusText}`
+          `Error ${response.status}: ${response.statusText}`,
         );
         (error as any).status = response.status;
         throw error;
@@ -176,7 +176,7 @@ export async function fetchApi<T>(
       data?.error?.message ||
         data?.message ||
         data?.error ||
-        `Error ${response.status}: ${response.statusText}`
+        `Error ${response.status}: ${response.statusText}`,
     );
     (error as any).status = response.status;
     throw error;
@@ -354,6 +354,11 @@ export const borrowingApi = {
   getMyBorrowings: async () => {
     return fetchApi<Borrowing[]>("/api/v1/borrowings/my-borrowings", {
       method: "GET",
+    });
+  },
+  returnBook: async (id: string) => {
+    return fetchApi(`/api/v1/borrowings/${id}/return`, {
+      method: "PATCH",
     });
   },
 };
