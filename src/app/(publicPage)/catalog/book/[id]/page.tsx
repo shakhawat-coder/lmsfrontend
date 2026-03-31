@@ -48,12 +48,12 @@ const BookDetailsPage = () => {
                 // For related books, we could just fetch all books and filter, or use a specific endpoint
                 const allBooksData = await bookApi.getAll();
                 const allBooks = Array.isArray(allBooksData) ? allBooksData : (allBooksData as any).data || [];
-                
+
                 // Filter books by same category if possible
                 const related = allBooks
                     .filter((b: Book) => b.categoryId === actualBook.categoryId && b.id !== actualBook.id)
                     .slice(0, 3);
-                
+
                 setRelatedBooks(related);
             } catch (error) {
                 console.error("Error fetching book:", error);
@@ -80,10 +80,10 @@ const BookDetailsPage = () => {
             const msg = error.message?.toLowerCase() || '';
             if (msg.includes("unauthorized") || msg.includes("not logged in")) {
                 alert("Please log in to borrow books.");
-                router.push("/auth/sign-in");
+                router.push("/login");
             } else if (msg.includes("active membership")) {
                 alert("You need an active membership to borrow books. Please subscribe to a plan.");
-                router.push("/dashboard/membership-plans");
+                router.push("/our-plans");
             } else {
                 alert(error.message || "Failed to borrow book");
             }

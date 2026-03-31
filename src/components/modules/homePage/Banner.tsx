@@ -4,37 +4,46 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 import { motion } from "motion/react";
+import { bannerApi, Banner as BannerType } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { Loader2Icon } from "lucide-react";
 
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
-const slidesData = [
-    {
-        id: 1,
-        image: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070&auto=format&fit=crop",
-        title: "Unlock Your Potential",
-        subtitle: "Learn from the best instructors around the globe and build your future.",
-        buttonText: "Get Started",
-    },
-    {
-        id: 2,
-        image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop",
-        title: "Master New Skills",
-        subtitle: "Explore thousands of courses in tech, business, arts, and more.",
-        buttonText: "Browse Courses",
-    },
-    {
-        id: 3,
-        image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop",
-        title: "Achieve Your Goals",
-        subtitle: "Join a community of learners and advance your career today.",
-        buttonText: "Join Now",
-    }
-];
+import Link from 'next/link';
 
 const Banner = () => {
+    const [banners, setBanners] = useState<BannerType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+                const res = await bannerApi.getAll(true);
+                setBanners(Array.isArray(res) ? res : (res as any)?.data || []);
+            } catch (error) {
+                console.error("Failed to fetch banners:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchBanners();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="w-full h-[80vh] min-h-150 flex items-center justify-center bg-gray-900">
+                <Loader2Icon className="h-10 w-10 animate-spin text-blue-500 opacity-50" />
+            </div>
+        );
+    }
+
+    if (banners.length === 0) {
+        return null; // Or show static fallback
+    }
+
     return (
         <div className="w-full h-[80vh] min-h-150 relative group overflow-hidden">
             <Swiper
@@ -51,7 +60,7 @@ const Banner = () => {
                 modules={[Autoplay, EffectFade, Navigation, Pagination]}
                 className="mySwiper w-full h-full"
             >
-                {slidesData.map((slide) => (
+                {banners.map((slide) => (
                     <SwiperSlide key={slide.id}>
                         {({ isActive }) => (
                             <div className="relative w-full h-full">
@@ -88,9 +97,9 @@ const Banner = () => {
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.7 }}
                                                 >
-                                                    <button className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold text-lg transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                                                    <Link href={slide.buttonLink} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold text-lg transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(37,99,235,0.4)]">
                                                         {slide.buttonText}
-                                                    </button>
+                                                    </Link>
                                                 </motion.div>
                                             </>
                                         )}

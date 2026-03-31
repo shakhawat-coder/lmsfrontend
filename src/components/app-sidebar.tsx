@@ -29,24 +29,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="sticky top-0 z-40">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <img src="/logo.png" alt="logo" className="w-full h-full object-cover" />
+                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
+                  <img src="/logo.png" alt="logo" className="w-full h-full object-cover rounded-lg" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none text-left">
-                  <span className="font-semibold">LMS System</span>
-                  <span className="text-xs text-muted-foreground">v1.0.0</span>
+                <div className="flex flex-col gap-0.5 leading-none text-left overflow-hidden">
+                  <span className="font-semibold truncate">BookNest LMS</span>
+                  <span className="text-xs text-muted-foreground truncate">Library System</span>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <NavMain items={filteredLinks} label="Dashboard Menu" />
       </SidebarContent>

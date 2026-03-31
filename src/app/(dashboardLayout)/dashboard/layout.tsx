@@ -39,16 +39,29 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbPage>Dashboard</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+        {/* Header with Logo and Toggle */}
+        <header className="flex h-11 shrink-0 items-center justify-between border-b px-4 sticky top-0 z-40 bg-background">
+          {/* Mobile Logo on Left */}
+          <div className="flex md:hidden items-center gap-2">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <img src="/logo.png" alt="logo" className="w-full h-full object-cover" />
+            </div>
+            <span className="text-sm font-semibold">LMS</span>
+          </div>
+
+          {/* Desktop Breadcrumb on Left */}
+          {/* <div className="hidden lg:flex items-center gap-2">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div> */}
+
+          {/* Toggle on Right */}
+          <SidebarTrigger className="-mr-1" />
         </header>
         <div className="p-6">
           <RoleProxy>{children}</RoleProxy>

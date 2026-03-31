@@ -206,7 +206,7 @@ const Navbar = ({
             <form className="relative mr-2" onSubmit={handleSearchSubmit}>
               <Input
                 placeholder="Search books..."
-                className="pr-8"
+                className="pr-8 h-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -261,10 +261,10 @@ const Navbar = ({
               </div>
             ) : (
               <>
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="h-10">
                   <Link href={auth.login.url}>{auth.login.title}</Link>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="h-10">
                   <Link href={auth.signup.url}>{auth.signup.title}</Link>
                 </Button>
               </>

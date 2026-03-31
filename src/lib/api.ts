@@ -7,6 +7,11 @@ export interface User {
   image?: string;
   role?: string;
   status?: string;
+  emailVerified?: boolean;
+  phoneNumber?: string;
+  address?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Session {
@@ -88,6 +93,18 @@ export interface Payment {
   transactionId: string;
   status: "PAID" | "UNPAID";
   paymentMethod?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Banner {
+  id: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -174,9 +191,9 @@ export async function fetchApi<T>(
   if (!response.ok) {
     const error = new Error(
       data?.error?.message ||
-        data?.message ||
-        data?.error ||
-        `Error ${response.status}: ${response.statusText}`,
+      data?.message ||
+      data?.error ||
+      `Error ${response.status}: ${response.statusText}`,
     );
     (error as any).status = response.status;
     throw error;
@@ -193,9 +210,16 @@ export const authApi = {
    * @param userData { name, email, password, image, ...additionalFields }
    */
   signUp: async (userData: any) => {
+    const callbackURL = typeof window !== 'undefined' 
+      ? `${window.location.origin}/dashboard` 
+      : 'http://localhost:3000/dashboard';
+      
     return fetchApi("/api/auth/sign-up/email", {
       method: "POST",
-      body: JSON.stringify(userData),
+      body: JSON.stringify({
+        ...userData,
+        callbackURL,
+      }),
     });
   },
 
@@ -490,6 +514,44 @@ export const contactApi = {
 
   deleteMessage: async (id: string) => {
     return fetchApi<{ success: boolean }>(`/api/v1/contact/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+/**
+ * Banner API Endpoints
+ */
+export const bannerApi = {
+  getAll: async (activeOnly: boolean = false) => {
+    return fetchApi<Banner[]>("/api/v1/banners", {
+      method: "GET",
+      params: activeOnly ? { activeOnly: "true" } : {},
+    });
+  },
+
+  getById: async (id: string) => {
+    return fetchApi<Banner>(`/api/v1/banners/${id}`, {
+      method: "GET",
+    });
+  },
+
+  create: async (formData: FormData) => {
+    return fetchApi<Banner>("/api/v1/banners", {
+      method: "POST",
+      body: formData,
+    });
+  },
+
+  update: async (id: string, data: any) => {
+    return fetchApi<Banner>(`/api/v1/banners/${id}`, {
+      method: "PATCH",
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: string) => {
+    return fetchApi<{ success: boolean }>(`/api/v1/banners/${id}`, {
       method: "DELETE",
     });
   },

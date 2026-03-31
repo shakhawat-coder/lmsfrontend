@@ -77,7 +77,7 @@ function PaymentSuccessPage() {
             </div>
             <div className="flex gap-3 pt-4">
               <Button variant="outline" asChild className="flex-1">
-                <Link href="/dashboard/memberships">View Membership</Link>
+                <Link href="/dashboard/my-membership">View Membership</Link>
               </Button>
               <Button asChild className="flex-1">
                 <Link href="/">Go Home</Link>
@@ -153,7 +153,7 @@ function PaymentSuccessPage() {
 
               <div className="flex flex-col gap-3">
                 <Button asChild size="lg" className="w-full">
-                  <Link href="/catalog">
+                  <Link href="/catalog/book">
                     Browse Books
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>

@@ -175,7 +175,7 @@ export default function DashboardPage() {
             <CardContent className="h-[300px] flex items-end justify-between px-6 pb-12 gap-2 relative">
                {/* Simple visual chart using bars */}
                {data.categories.length > 0 ? (
-                 data.categories.slice(0, 6).map((cat, i) => {
+                 data.categories.map((cat, i) => {
                    const count = data.books.filter(b => b.categoryId === cat.id).length;
                    const maxCount = Math.max(...data.categories.map(c => data.books.filter(b => b.categoryId === c.id).length), 1);
                    const height = Math.max(20, (count / maxCount) * 200);
@@ -193,7 +193,7 @@ export default function DashboardPage() {
                          </div>
                        </motion.div>
                        <span className="text-[10px] text-muted-foreground font-medium truncate w-full text-center">
-                         {cat.name}
+                         {cat.name.length > 10 ? cat.name.slice(0, 10) + "..." : cat.name}
                        </span>
                      </div>
                    )

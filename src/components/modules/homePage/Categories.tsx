@@ -63,7 +63,7 @@ const Categories = () => {
                     </div>
 
                     <div className="mt-6 md:mt-0">
-                        <Link href="/catalog" className="group flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+                        <Link href="/catalog/categories" className="group flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                             View All Categories
                             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                         </Link>
