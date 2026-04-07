@@ -14,12 +14,22 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { LibraryBigIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
+  const { isMobile, setOpenMobile } = useSidebar();
+  const pathname = usePathname();
+
+  // Close mobile sidebar whenever the pathname changes
+  React.useEffect(() => {
+    setOpenMobile(false);
+  }, [pathname, setOpenMobile]);
+
 
   // Filter links based on user role
   const filteredLinks = sidebarLinks.filter((link) => {

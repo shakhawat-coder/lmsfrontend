@@ -50,7 +50,7 @@ const MembershipPlan = () => {
   };
 
   return (
-    <section className="py-20 bg-gray-50 w-full">
+    <section className="py-20 bg-background w-full">
       <div className=" mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -59,8 +59,8 @@ const MembershipPlan = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Choose Your Library Plan</h2>
-          <p className="text-lg text-gray-600">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Choose Your Library Plan</h2>
+          <p className="text-lg text-muted-foreground">
             Unlock the world of knowledge with our flexible library membership options. Whether you're a casual reader or a dedicated researcher, we have the right plan for you.
           </p>
         </motion.div>
@@ -104,7 +104,7 @@ const MembershipPlan = () => {
                     whileHover={{ y: -10 }}
                     className="flex"
                   >
-                    <div className={`relative w-full md:w-[360px] bg-white rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-gray-100 shadow-xl shadow-gray-200/50'
+                    <div className={`relative w-full md:w-[360px] bg-card rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-border shadow-xl shadow-gray-200/50 dark:shadow-none'
                       } p-10 flex flex-col w-full h-full transition-all duration-500`}
                     >
                       {isPopular && (
@@ -116,13 +116,13 @@ const MembershipPlan = () => {
                       )}
     
                       <div className="mb-8">
-                        <h3 className="text-3xl font-black text-gray-900 mb-2 capitalize italic">{plan.name.toLowerCase()}</h3>
-                        <p className="text-gray-500 font-medium leading-relaxed text-sm">{plan.description}</p>
+                        <h3 className="text-3xl font-black text-foreground mb-2 capitalize italic">{plan.name.toLowerCase()}</h3>
+                        <p className="text-muted-foreground font-medium leading-relaxed text-sm">{plan.description}</p>
                       </div>
     
                       <div className="mb-10 flex items-baseline gap-1">
-                        <span className="text-5xl font-black text-gray-900 tracking-tighter">{getPriceDisplay(plan.price)}</span>
-                        <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">/ {plan.interval}</span>
+                        <span className="text-5xl font-black text-foreground tracking-tighter">{getPriceDisplay(plan.price)}</span>
+                        <span className="text-muted-foreground font-bold text-xs uppercase tracking-widest">/ {plan.interval}</span>
                       </div>
     
                       <div className="space-y-5 flex-1 mb-12">
@@ -133,7 +133,7 @@ const MembershipPlan = () => {
                               <div className="p-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600">
                                  <Check className="h-3 w-3" />
                               </div>
-                              <span className="text-gray-700 font-bold text-sm group-hover:text-blue-600 transition-colors">{feature}</span>
+                              <span className="text-foreground/80 font-bold text-sm group-hover:text-blue-600 transition-colors">{feature}</span>
                             </li>
                           ))}
                         </ul>

@@ -78,27 +78,27 @@ const Footer = ({
       ],
     },
   ],
-  copyright = "© 2024 Library Management System. All rights reserved.",
+  copyright = `© ${new Date().getFullYear()} BookNest. All rights reserved.`,
   bottomLinks = [
     { text: "Terms and Conditions", url: "#" },
     { text: "Privacy Policy", url: "#" },
   ],
 }: Footer2Props) => {
   return (
-    <section className={cn("pt-20 pb-5", className)}>
-      <div className="container">
+    <section className={cn("pt-20 pb-5 px-5 lg:px-0", className)}>
+      <div className="container mx-auto">
         <footer>
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
             <div className="col-span-2 mb-8 lg:mb-0">
               <div className="flex items-center gap-2 lg:justify-start">
-                <Logo url="https://shadcnblocks.com">
+                <Logo url="/">
                   <LogoImage
                     src={logo.src}
                     alt={logo.alt}
                     title={logo.title}
                     className="h-20 dark:invert"
                   />
-                   </Logo>
+                </Logo>
               </div>
               <p className="mt-10">{tagline}</p>
             </div>

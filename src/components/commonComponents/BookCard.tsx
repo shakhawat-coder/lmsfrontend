@@ -15,7 +15,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, variants }) => {
     return (
         <motion.div
             variants={variants}
-            className="group flex flex-col bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl border border-gray-100 dark:border-gray-800 transition-all duration-300 h-full"
+            className="group flex flex-col bg-card rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl border border-border transition-all duration-300 h-full"
         >
             {/* Book Cover Container */}
             <Link href={`/catalog/book/${book.id}`} className="block relative h-48 xs:h-60 sm:h-72 md:h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -38,18 +38,18 @@ const BookCard: React.FC<BookCardProps> = ({ book, variants }) => {
             {/* Book Info */}
             <div className="p-3 sm:p-4 md:p-6 flex flex-col flex-grow">
                 <Link href={`/catalog/book/${book.id}`}>
-                    <h3 className="text-sm sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 md:mb-3 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-sm sm:text-lg md:text-xl font-bold text-foreground mb-1 sm:mb-2 md:mb-3 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {book.title}
                     </h3>
                 </Link>
                 
                 <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4 md:mb-6">
-                    <div className="flex items-center text-gray-600 dark:text-gray-400 text-[10px] sm:text-xs md:text-sm font-medium">
-                        <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2.5 text-gray-400" />
+                    <div className="flex items-center text-muted-foreground text-[10px] sm:text-xs md:text-sm font-medium">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2.5 text-muted-foreground/50" />
                         <span className="truncate">{book.author}</span>
                     </div>
-                    <div className="flex items-center text-gray-600 dark:text-gray-400 text-[10px] sm:text-xs md:text-sm font-medium">
-                        <Tag className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2.5 text-gray-400" />
+                    <div className="flex items-center text-muted-foreground text-[10px] sm:text-xs md:text-sm font-medium">
+                        <Tag className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2.5 text-muted-foreground/50" />
                         <span>{book.category?.name || "Uncategorized"}</span>
                     </div>
                 </div>

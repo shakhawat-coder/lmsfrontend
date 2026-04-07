@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { RoleProxy } from "../../../../proxy";
+import { ModeToggle } from "@/components/layout/ModeToggle";
 
 export default function DashboardLayout({
   children,
@@ -61,7 +62,10 @@ export default function DashboardLayout({
           </div> */}
 
           {/* Toggle on Right */}
-          <SidebarTrigger className="-mr-1" />
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="-mr-1" />
+            <ModeToggle />
+          </div>
         </header>
         <div className="p-6">
           <RoleProxy>{children}</RoleProxy>

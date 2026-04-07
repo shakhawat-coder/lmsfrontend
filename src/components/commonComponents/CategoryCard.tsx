@@ -16,7 +16,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, variants }) => {
         <motion.div variants={variants}>
             <Link
                 href={`/catalog/book?category=${category.id}`}
-                className="group block relative h-72 md:h-80 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300"
+                className="group block relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300"
             >
                 {/* Background Image Image */}
                 <div
@@ -28,11 +28,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, variants }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
 
                 {/* Content */}
-                <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                <div className="absolute inset-0 p-3 sm:p-6 flex flex-col justify-end">
                     <motion.div
                         className="transform transition-transform duration-300 group-hover:-translate-y-2"
                     >
-                        <h3 className="text-2xl font-bold text-white mb-2">
+                        <h3 className="text-lg sm:text-2xl font-bold text-white mb-2">
                             {category.name}
                         </h3>
                         <div className="flex items-center gap-2">

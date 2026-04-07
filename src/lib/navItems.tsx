@@ -11,7 +11,8 @@ import {
   ListIcon,
   MailIcon,
   BookCopyIcon,
-  ImageIcon
+  ImageIcon,
+  NewspaperIcon
 } from "lucide-react";
 
 export interface DashboardLink {
@@ -77,6 +78,16 @@ export const sidebarLinks: DashboardLink[] = [
     items: [
       { title: "All Banners", url: "/dashboard/banners", icon: ListIcon },
       { title: "Add Banner", url: "/dashboard/banners/add", icon: PlusCircleIcon },
+    ]
+  },
+  {
+    title: "Library Journal",
+    url: "/dashboard/blogs",
+    icon: NewspaperIcon,
+    roles: ["ADMIN", "SUPERADMIN"],
+    items: [
+        { title: "All Articles", url: "/dashboard/blogs", icon: ListIcon },
+        { title: "Add Article", url: "/dashboard/blogs/add", icon: PlusCircleIcon },
     ]
   },
   {

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Book, Menu, Search, Sunset, Trees, Zap, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "./ModeToggle";
 import {
   Avatar,
   AvatarFallback,
@@ -135,6 +136,7 @@ const Navbar = ({
   const { user, isLoading, logout: authLogout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -158,6 +160,11 @@ const Navbar = ({
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery, router, pathname]);
+
+  // Close mobile menu when pathname changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -214,6 +221,8 @@ const Navbar = ({
                 <Search className="h-4 w-4" />
               </Button>
             </form>
+
+            <ModeToggle />
 
             {isLoading ? (
               <div className="h-8 w-20 animate-pulse rounded-md bg-muted"></div>
@@ -283,7 +292,7 @@ const Navbar = ({
                 alt={logo.alt}
               />
             </Link>
-            <Sheet>
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon">
                   <Menu className="size-4" />

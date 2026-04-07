@@ -32,7 +32,7 @@ const Banner = () => {
         fetchBanners();
     }, []);
 
-    if (isLoading) {
+    if (isLoading) { 
         return (
             <div className="w-full h-[80vh] min-h-150 flex items-center justify-center bg-gray-900">
                 <Loader2Icon className="h-10 w-10 animate-spin text-blue-500 opacity-50" />
@@ -45,7 +45,7 @@ const Banner = () => {
     }
 
     return (
-        <div className="w-full h-[80vh] min-h-150 relative group overflow-hidden">
+        <div className="w-full h-[80vh] lg:min-h-150 relative group overflow-hidden">
             <Swiper
                 spaceBetween={0}
                 effect={'fade'}

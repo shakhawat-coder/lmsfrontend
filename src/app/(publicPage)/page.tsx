@@ -5,6 +5,8 @@ import MembershipPlan from "@/components/modules/homePage/MembershipPlan";
 import Statistics from "@/components/modules/homePage/Statistics";
 import Testimonial from "@/components/modules/homePage/Testimonial";
 import Cta from "@/components/modules/homePage/Cta";
+import FAQ from "@/components/modules/homePage/FAQ";
+import BlogSection from "@/components/modules/homePage/BlogSection";
 
 export default function Home() {
   return (
@@ -15,8 +17,10 @@ export default function Home() {
         <MostReadedBooks />
         <Statistics />
         <MembershipPlan />
+        <FAQ />
         <Testimonial />
         <Cta />
+        <BlogSection />
       </main>
     </div>
   );

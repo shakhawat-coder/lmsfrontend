@@ -65,11 +65,11 @@ const testimonials: TestimonialData[] = [
 
 const Testimonial = () => {
   return (
-    <section className="py-24 bg-zinc-900 relative overflow-hidden w-full">
+    <section className="py-24 bg-background relative overflow-hidden w-full">
       {/* Background ambient lighting */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-1/4 -right-48 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px]"></div>
-        <div className="absolute -bottom-24 -left-48 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px]"></div>
+        <div className="absolute top-1/4 -right-48 w-96 h-96 bg-blue-600/10 dark:bg-blue-600/20 rounded-full blur-[100px]"></div>
+        <div className="absolute -bottom-24 -left-48 w-96 h-96 bg-purple-600/10 dark:bg-purple-600/20 rounded-full blur-[100px]"></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10 w-full max-w-7xl">
@@ -80,9 +80,9 @@ const Testimonial = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="text-blue-400 font-semibold tracking-wider uppercase text-sm mb-2 block">Community Voices</span>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">What Our Readers Say</h2>
-          <p className="text-lg text-zinc-400">
+          <span className="text-blue-600 dark:text-blue-400 font-semibold tracking-wider uppercase text-sm mb-2 block">Community Voices</span>
+          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">What Our Readers Say</h2>
+          <p className="text-lg text-muted-foreground">
             Join thousands of satisfied members who have made our library their second home.
           </p>
         </motion.div>
@@ -117,7 +117,7 @@ const Testimonial = () => {
           >
             {[...testimonials, ...testimonials, ...testimonials].map((testimonial, index) => (
               <SwiperSlide key={`${testimonial.id}-${index}`} className="max-w-md w-full sm:w-[400px]">
-                <div className="bg-zinc-800/80 backdrop-blur-xl border border-zinc-700/50 rounded-2xl p-8 shadow-2xl relative h-full flex flex-col mx-4">
+                <div className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-8 shadow-2xl relative h-full flex flex-col mx-4">
                   <div className="absolute top-6 right-8 text-blue-500/20">
                     <Quote size={60} className="transform rotate-180" />
                   </div>
@@ -127,24 +127,24 @@ const Testimonial = () => {
                       <Star 
                         key={i} 
                         size={18} 
-                        className={i < testimonial.rating ? "fill-amber-400 text-amber-400" : "text-zinc-600"} 
+                        className={i < testimonial.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"} 
                       />
                     ))}
                   </div>
                   
-                  <p className="text-zinc-300 text-lg italic mb-8 relative z-10 flex-1 leading-relaxed">
+                  <p className="text-foreground/80 dark:text-zinc-300 text-lg italic mb-8 relative z-10 flex-1 leading-relaxed">
                     "{testimonial.content}"
                   </p>
                   
-                  <div className="flex items-center gap-4 relative z-10 mt-auto pt-4 border-t border-zinc-700/50">
+                  <div className="flex items-center gap-4 relative z-10 mt-auto pt-4 border-t border-border">
                     <img 
                       src={testimonial.image} 
                       alt={testimonial.name} 
                       className="w-12 h-12 rounded-full object-cover border-2 border-blue-500/50"
                     />
                     <div>
-                      <h4 className="text-white font-bold">{testimonial.name}</h4>
-                      <p className="text-blue-400 text-sm">{testimonial.role}</p>
+                      <h4 className="text-foreground font-bold">{testimonial.name}</h4>
+                      <p className="text-blue-600 dark:text-blue-400 text-sm">{testimonial.role}</p>
                     </div>
                   </div>
                 </div>

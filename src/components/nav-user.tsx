@@ -33,11 +33,14 @@ export function NavUser({
     avatar: string
   }
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile, setOpenMobile } = useSidebar()
   const { logout } = useAuth()
   const router = useRouter()
 
   const handleLogout = async () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
     await logout()
     router.push("/")
     router.refresh()

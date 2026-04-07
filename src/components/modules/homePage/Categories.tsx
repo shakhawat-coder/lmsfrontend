@@ -50,14 +50,14 @@ const Categories = () => {
     }, []);
 
     return (
-        <section className="w-full py-20 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        <section className="w-full py-20 bg-muted/30 dark:bg-muted/10 overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                     <div className="max-w-2xl">
-                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
                             Explore Top Categories
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                        <p className="text-lg text-muted-foreground">
                             Discover thousands of books across multiple disciplines. Find your next great read by browsing our extensive collections.
                         </p>
                     </div>
@@ -82,7 +82,7 @@ const Categories = () => {
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                        className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
                     >
                         {categories.map((category) => (
                             <CategoryCard key={category.id} category={category} variants={itemVariants} />
@@ -94,4 +94,4 @@ const Categories = () => {
     );
 };
 
-export default Categories;
+export default Categories;

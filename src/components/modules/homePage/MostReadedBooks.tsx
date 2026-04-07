@@ -47,14 +47,14 @@ const MostReadedBooks = () => {
     }, []);
 
     return (
-        <section className="w-full py-20 bg-white dark:bg-black overflow-hidden">
+        <section className="w-full py-20 bg-background overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                     <div className="max-w-2xl">
-                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
                             Most Read Books
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                        <p className="text-lg text-muted-foreground">
                             Discover the books that our community can't put down. Uncover trending titles and dive into your next great adventure.
                         </p>
                     </div>

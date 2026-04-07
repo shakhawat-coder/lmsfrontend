@@ -109,6 +109,18 @@ export interface Banner {
   updatedAt: string;
 }
 
+export interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  author: string;
+  category: string;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /**
  * Common fetch wrapper for API calls
  */
@@ -552,6 +564,49 @@ export const bannerApi = {
 
   delete: async (id: string) => {
     return fetchApi<{ success: boolean }>(`/api/v1/banners/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+/**
+ * Blog API Endpoints
+ */
+export const blogApi = {
+  getAll: async () => {
+    return fetchApi<Blog[]>("/api/v1/blogs", {
+      method: "GET",
+    });
+  },
+
+  getPublished: async () => {
+    return fetchApi<Blog[]>("/api/v1/blogs/published", {
+      method: "GET",
+    });
+  },
+
+  getById: async (id: string) => {
+    return fetchApi<Blog>(`/api/v1/blogs/${id}`, {
+      method: "GET",
+    });
+  },
+
+  create: async (formData: FormData) => {
+    return fetchApi<Blog>("/api/v1/blogs", {
+      method: "POST",
+      body: formData,
+    });
+  },
+
+  update: async (id: string, data: any) => {
+    return fetchApi<Blog>(`/api/v1/blogs/${id}`, {
+      method: "PATCH",
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: string) => {
+    return fetchApi<{ success: boolean }>(`/api/v1/blogs/${id}`, {
       method: "DELETE",
     });
   },
