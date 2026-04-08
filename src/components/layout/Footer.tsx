@@ -1,5 +1,15 @@
-import { Logo, LogoImage, LogoText } from "@/components/logo";
+import { Logo, LogoImage } from "@/components/logo";
 import { cn } from "@/lib/utils";
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Facebook, 
+  Twitter, 
+  Instagram, 
+  Linkedin, 
+} from "lucide-react";
+import Link from "next/link";
 
 interface MenuItem {
   title: string;
@@ -37,93 +47,127 @@ const Footer = ({
   tagline = "Your gateway to knowledge and discovery.",
   menuItems = [
     {
-      title: "Catalog",
+      title: "Explore",
       links: [
-        { text: "Search Books", url: "/catalog/search" },
-        { text: "Browse Categories", url: "/catalog/categories" },
-        { text: "New Arrivals", url: "/catalog/new-arrivals" },
-        { text: "Popular Books", url: "/catalog/popular" },
-        { text: "Advanced Search", url: "/catalog/advanced" },
+        { text: "All Books", url: "/catalog/book" },
+        { text: "Categories", url: "/catalog/categories" },
+        { text: "Library Journal", url: "/blogs" },
+        { text: "Membership Plans", url: "/our-plans" },
       ],
     },
     {
-      title: "Services",
+      title: "Navigation",
       links: [
-        { text: "Membership Plans", url: "/our-plan" },
-        { text: "Borrowing", url: "/services/borrowing" },
-        { text: "Renewals", url: "/services/renewals" },
-        { text: "Reservations", url: "/services/reservations" },
-        { text: "Interlibrary Loan", url: "/services/interlibrary" },
-        { text: "Digital Resources", url: "/services/digital" },
+        { text: "Home", url: "/" },
+        { text: "About Us", url: "/about" },
+        { text: "Contact", url: "/contact" },
+        { text: "FAQs", url: "/#faq" },
       ],
     },
     {
-      title: "About",
+      title: "User Area",
       links: [
-        { text: "Library Hours", url: "/about/hours" },
-        { text: "Contact Us", url: "/about/contact" },
-        { text: "Location & Directions", url: "/about/location" },
-        { text: "Library History", url: "/about/history" },
-        { text: "Staff Directory", url: "/about/staff" },
-      ],
-    },
-    {
-      title: "Support",
-      links: [
-        { text: "Help Center", url: "/support/help" },
-        { text: "FAQs", url: "/support/faqs" },
-        { text: "Contact Support", url: "/support/contact" },
-        { text: "System Status", url: "/support/status" },
-        { text: "Feedback", url: "/support/feedback" },
+        { text: "My Dashboard", url: "/dashboard" },
+        { text: "Borrowing History", url: "/dashboard/my-borrowings" },
+        { text: "Membership", url: "/dashboard/my-membership" },
+        { text: "Profile Settings", url: "/dashboard/profile" },
       ],
     },
   ],
-  copyright = `© ${new Date().getFullYear()} BookNest. All rights reserved.`,
+  copyright = `© ${new Date().getFullYear()} BookNest LMS. All rights reserved.`,
   bottomLinks = [
-    { text: "Terms and Conditions", url: "#" },
-    { text: "Privacy Policy", url: "#" },
+    { text: "Terms of Service", url: "#" },
+    { text: "Privacy", url: "#" },
+    { text: "Support", url: "/contact" },
   ],
 }: Footer2Props) => {
+  const socials = [
+    { icon: Facebook, url: "#", color: "hover:text-blue-500" },
+    { icon: Twitter, url: "#", color: "hover:text-sky-400" },
+    { icon: Instagram, url: "#", color: "hover:text-pink-500" },
+    { icon: Linkedin, url: "#", color: "hover:text-blue-700" },
+  ];
+
+  const contactInfo = [
+    { icon: MapPin, text: "123 Library Plaza, Wisdom City, NY 10001" },
+    { icon: Phone, text: "+1 (555) 000-BOOK" },
+    { icon: Mail, text: "hello@booknest.com" },
+  ];
+
   return (
-    <section className={cn("pt-20 pb-5 px-5 lg:px-0", className)}>
+    <section className={cn("pt-24 pb-12 px-5 lg:px-0 bg-muted/30 dark:bg-zinc-950/30 border-t border-border", className)}>
       <div className="container mx-auto">
         <footer>
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-            <div className="col-span-2 mb-8 lg:mb-0">
-              <div className="flex items-center gap-2 lg:justify-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
+            <div className="md:col-span-2 space-y-8">
+              <div className="flex items-center gap-2">
                 <Logo url="/">
                   <LogoImage
                     src={logo.src}
                     alt={logo.alt}
                     title={logo.title}
-                    className="h-20 dark:invert"
+                    className="h-16 dark:invert"
                   />
                 </Logo>
               </div>
-              <p className="mt-10">{tagline}</p>
+              <p className="text-muted-foreground leading-relaxed max-w-xs font-medium">{tagline}</p>
+              
+              <div className="flex gap-3">
+                {socials.map((social, idx) => {
+                  const Icon = social.icon;
+                  return (
+                    <a 
+                      key={idx} 
+                      href={social.url} 
+                      className={cn("p-2.5 rounded-2xl bg-background border border-border shadow-sm transition-all duration-300 transform hover:-translate-y-1", social.color)}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </a>
+                  )
+                })}
+              </div>
             </div>
+
+            <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                <h3 className="mb-8 font-black uppercase tracking-[0.2em] text-[10px] text-blue-600">Contact Us</h3>
+                <ul className="space-y-6">
+                  {contactInfo.map((info, idx) => {
+                    const Icon = info.icon;
+                    return (
+                      <li key={idx} className="flex gap-4 text-sm font-bold items-start group">
+                        <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 group-hover:scale-110 transition-transform">
+                            <Icon className="w-4 h-4 shrink-0" />
+                        </div>
+                        <span className="text-muted-foreground leading-snug">{info.text}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+            </div>
+
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
-                <h3 className="mb-4 font-bold">{section.title}</h3>
-                <ul className="space-y-4 text-muted-foreground">
+                <h3 className="mb-8 font-black uppercase tracking-[0.2em] text-[10px] text-blue-600">{section.title}</h3>
+                <ul className="space-y-4">
                   {section.links.map((link, linkIdx) => (
                     <li
                       key={linkIdx}
-                      className="font-medium hover:text-primary"
+                      className="font-bold text-sm text-muted-foreground hover:text-blue-600 transition-colors"
                     >
-                      <a href={link.url}>{link.text}</a>
+                      <Link href={link.url}>{link.text}</Link>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
-          <div className="mt-24 flex flex-col justify-between gap-4 border-t pt-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
-            <p>{copyright}</p>
-            <ul className="flex gap-4">
+
+          <div className="mt-24 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-bold text-muted-foreground">
+            <p className="tracking-tight">{copyright}</p>
+            <ul className="flex gap-8">
               {bottomLinks.map((link, linkIdx) => (
-                <li key={linkIdx} className="underline hover:text-primary">
-                  <a href={link.url}>{link.text}</a>
+                <li key={linkIdx} className="hover:text-blue-600 transition-colors">
+                  <Link href={link.url}>{link.text}</Link>
                 </li>
               ))}
             </ul>

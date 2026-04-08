@@ -126,9 +126,10 @@ export interface Blog {
  */
 export async function fetchApi<T>(
   endpoint: string,
-  options: RequestInit & { params?: Record<string, string> } = {},
+  options: RequestInit & { params?: Record<string, any> } = {},
 ): Promise<T> {
-  const { params, ...fetchOptions } = options;
+  const safeOptions = options || {};
+  const { params, ...fetchOptions } = safeOptions;
 
   // Correct URL handling for endpoints starting with /
   const baseUrl = API_URL.endsWith("/") ? API_URL.slice(0, -1) : API_URL;
@@ -139,9 +140,14 @@ export async function fetchApi<T>(
   const url = new URL(`${baseUrl}${cleanEndpoint}`);
 
   if (params) {
-    Object.keys(params).forEach((key) =>
-      url.searchParams.append(key, params[key]),
-    );
+    Object.keys(params).forEach((key) => {
+      const value = params[key];
+      if (Array.isArray(value)) {
+        value.forEach((val) => url.searchParams.append(key, String(val)));
+      } else if (value !== undefined && value !== null) {
+        url.searchParams.append(key, String(value));
+      }
+    });
   }
 
   const headers = new Headers(fetchOptions.headers);
@@ -209,6 +215,12 @@ export async function fetchApi<T>(
     );
     (error as any).status = response.status;
     throw error;
+  }
+
+  // If the response follows our standard backend format { success, message, data }, 
+  // return only the data property to the caller.
+  if (data && typeof data === 'object' && 'success' in data && 'data' in data && 'message' in data) {
+    return data.data as T;
   }
 
   return data as T;
@@ -331,9 +343,10 @@ export const userApi = {
  * Book API Endpoints
  */
 export const bookApi = {
-  getAll: async () => {
+  getAll: async (params?: Record<string, any>) => {
     return fetchApi<Book[]>("/api/v1/books", {
       method: "GET",
+      params: params,
     });
   },
 
@@ -608,6 +621,18 @@ export const blogApi = {
   delete: async (id: string) => {
     return fetchApi<{ success: boolean }>(`/api/v1/blogs/${id}`, {
       method: "DELETE",
+    });
+  },
+};
+
+/**
+ * Chat API Endpoints
+ */
+export const chatApi = {
+  sendMessage: async (message: string, history: Array<{ role: string; parts: string }> = []) => {
+    return fetchApi<string>("/api/v1/chat/message", {
+      method: "POST",
+      body: JSON.stringify({ message, history }),
     });
   },
 };

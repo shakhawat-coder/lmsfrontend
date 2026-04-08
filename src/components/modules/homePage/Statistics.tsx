@@ -62,10 +62,14 @@ const Statistics = () => {
         
         // Fetch books (usually public)
         try {
-          const booksRes = await bookApi.getAll();
-          const books = normalize(booksRes);
-          if (books.length > 0) {
-            setStatsData(prev => ({ ...prev, totalBooks: books.length }));
+          const booksRes = await bookApi.getAll({ limit: 1 }); // Just need the meta total
+          if (booksRes && (booksRes as any).meta) {
+            setStatsData(prev => ({ ...prev, totalBooks: (booksRes as any).meta.total }));
+          } else {
+            const books = normalize(booksRes);
+            if (books.length > 0) {
+              setStatsData(prev => ({ ...prev, totalBooks: books.length }));
+            }
           }
         } catch (e) { console.warn("Failed to fetch books for stats", e); }
 

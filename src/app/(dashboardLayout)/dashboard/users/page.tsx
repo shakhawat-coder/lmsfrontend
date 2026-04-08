@@ -29,6 +29,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "motion/react";
 import { useAuth } from "@/providers/auth-provider";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 
 export default function UsersPage() {
   const { user: currentUser } = useAuth();
@@ -82,7 +83,7 @@ export default function UsersPage() {
   };
 
 
-  if (isLoading) return <div className="p-4 flex h-64 items-center justify-center text-muted-foreground">Loading users...</div>;
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="space-y-6">

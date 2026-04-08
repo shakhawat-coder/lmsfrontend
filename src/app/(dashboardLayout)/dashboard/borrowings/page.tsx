@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 
 export default function BorrowingsPage() {
     const [borrowings, setBorrowings] = useState<Borrowing[]>([]);
@@ -45,11 +46,7 @@ export default function BorrowingsPage() {
     };
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center">
-                <p className="text-muted-foreground">Loading borrowings...</p>
-            </div>
-        );
+        return <DashboardLoading />;
     }
 
     return (

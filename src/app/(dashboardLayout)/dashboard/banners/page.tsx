@@ -11,7 +11,8 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit2Icon, Trash2Icon, PlusIcon, Loader2Icon, ImageIcon, CheckCircle2Icon, XCircleIcon } from "lucide-react";
+import { Edit2Icon, Trash2Icon, PlusIcon, ImageIcon, CheckCircle2Icon, XCircleIcon } from "lucide-react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import Link from "next/link";
 import { 
   AlertDialog, 
@@ -77,7 +78,7 @@ export default function BannersPage() {
     }
   };
 
-  if (isLoading) return <div className="p-4 flex h-[70vh] items-center justify-center text-muted-foreground"><Loader2Icon className="animate-spin mr-2 h-8 w-8" /> Loading banners...</div>;
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="space-y-6 pb-10">

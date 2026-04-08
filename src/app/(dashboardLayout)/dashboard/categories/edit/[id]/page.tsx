@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowLeftIcon, UploadCloudIcon, XIcon, Loader2Icon, CheckCircle2Icon } from "lucide-react";
 import Link from "next/link";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { Field, FieldError } from "@/components/ui/field";
@@ -110,14 +111,7 @@ export default function EditCategoryPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex h-[400px] items-center justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading category details...</p>
-        </div>
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   return (

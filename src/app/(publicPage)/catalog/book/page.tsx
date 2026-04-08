@@ -17,6 +17,7 @@ const AllBooksPage = () => {
     
     const [books, setBooks] = useState<Book[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [totalBooks, setTotalBooks] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     
     // Filter states
@@ -46,69 +47,86 @@ const AllBooksPage = () => {
         }
     }, [searchParams]);
 
+    // Fetch categories once
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchCategories = async () => {
             try {
-                const [booksData, categoriesData] = await Promise.all([
-                    bookApi.getAll(),
-                    categoryApi.getAll()
-                ]);
-                
-                const bookItems = Array.isArray(booksData) ? booksData : (booksData as any).data || [];
+                const categoriesData = await categoryApi.getAll();
                 const categoryItems = Array.isArray(categoriesData) ? categoriesData : (categoriesData as any).data || [];
-                
-                setBooks(bookItems);
                 setCategories(categoryItems);
             } catch (error) {
-                console.error("Failed to fetch data:", error);
+                console.error("Failed to fetch categories:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Main data fetching effect
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const params: any = {
+                    page: currentPage,
+                    limit: BOOKS_PER_PAGE,
+                };
+
+                if (searchTerm) params.searchTerm = searchTerm;
+                if (selectedCategories.length > 0) params.categoryId = selectedCategories;
+                if (selectedAuthors.length > 0) params.author = selectedAuthors;
+                if (onlyAvailable) params.availability = true;
+
+                // Sort mapping
+                if (sortBy === "A-Z") {
+                    params.sortBy = "title";
+                    params.sortOrder = "asc";
+                } else if (sortBy === "Z-A") {
+                    params.sortBy = "title";
+                    params.sortOrder = "desc";
+                } else if (sortBy === "Newest Arrivals") {
+                    params.sortBy = "createdAt";
+                    params.sortOrder = "desc";
+                }
+
+                const response = await bookApi.getAll(params);
+                const bookItems = (response as any).data || [];
+                const meta = (response as any).meta || { total: 0 };
+                
+                setBooks(bookItems);
+                setTotalBooks(meta.total);
+            } catch (error) {
+                console.error("Failed to fetch books:", error);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchData();
+    }, [currentPage, searchTerm, selectedCategories, selectedAuthors, sortBy, onlyAvailable]);
+
+    // Extract unique authors (This is still tricky without a dedicated endpoint or full fetch)
+    // For now, we'll keep the ones we have in the current view or fetch them all once.
+    // To properly support authors filter from backend, we should ideally have an authors endpoint.
+    // As a workaround, we'll fetch all books once to get all unique authors.
+    const [allAuthors, setAllAuthors] = useState<string[]>([]);
+    useEffect(() => {
+        const fetchAllAuthors = async () => {
+            try {
+                const response = await bookApi.getAll({ limit: 1000 }); // Large limit to get most books
+                const allBooks = (response as any).data || [];
+                const uniqueAuthors = new Set<string>();
+                allBooks.forEach((book: any) => {
+                    if (book.author) uniqueAuthors.add(book.author);
+                });
+                setAllAuthors(Array.from(uniqueAuthors).sort());
+            } catch (error) {
+                console.error("Failed to fetch authors:", error);
+            }
+        };
+        fetchAllAuthors();
     }, []);
 
-    // Extract unique authors from the book list
-    const authors = useMemo(() => {
-        const uniqueAuthors = new Set<string>();
-        books.forEach(book => {
-            if (book.author) uniqueAuthors.add(book.author);
-        });
-        return Array.from(uniqueAuthors).sort();
-    }, [books]);
-
-    // Filtering logic
-    const filteredBooks = useMemo(() => {
-        return books.filter(book => {
-            const matchesSearch = !searchTerm || 
-                book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                book.isbn?.toLowerCase().includes(searchTerm.toLowerCase());
-            
-            const matchesCategory = selectedCategories.length === 0 || 
-                selectedCategories.includes(book.categoryId);
-            
-            const matchesAuthor = selectedAuthors.length === 0 || 
-                selectedAuthors.includes(book.author);
-
-            const matchesAvailability = !onlyAvailable || book.availability === true;
-            
-            return matchesSearch && matchesCategory && matchesAuthor && matchesAvailability;
-        }).sort((a, b) => {
-            if (sortBy === "A-Z") return a.title.localeCompare(b.title);
-            if (sortBy === "Z-A") return b.title.localeCompare(a.title);
-            if (sortBy === "Newest Arrivals") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            return 0; // Default sorting
-        });
-    }, [books, searchTerm, selectedCategories, selectedAuthors, sortBy, onlyAvailable]);
-
-    // Pagination calculations
-    const totalPages = Math.ceil(filteredBooks.length / BOOKS_PER_PAGE);
-    const paginatedBooks = useMemo(() => {
-        const startIndex = (currentPage - 1) * BOOKS_PER_PAGE;
-        return filteredBooks.slice(startIndex, startIndex + BOOKS_PER_PAGE);
-    }, [filteredBooks, currentPage]);
+    const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
 
     const handleCategoryToggle = (categoryId: string) => {
         setSelectedCategories(prev => 
@@ -116,7 +134,7 @@ const AllBooksPage = () => {
                 ? prev.filter(id => id !== categoryId) 
                 : [...prev, categoryId]
         );
-        setCurrentPage(1); // Reset page on filter change
+        setCurrentPage(1); 
     };
 
     const handleAuthorToggle = (author: string) => {
@@ -125,12 +143,12 @@ const AllBooksPage = () => {
                 ? prev.filter(a => a !== author) 
                 : [...prev, author]
         );
-        setCurrentPage(1); // Reset page on filter change
+        setCurrentPage(1);
     };
 
     const handleAvailabilityToggle = () => {
         setOnlyAvailable(!onlyAvailable);
-        setCurrentPage(1); // Reset page on filter change
+        setCurrentPage(1);
     };
 
     const clearFilters = () => {
@@ -157,7 +175,7 @@ const AllBooksPage = () => {
                 {/* Sidebar */}
                 <CatalogSidebar 
                     categories={categories}
-                    authors={authors}
+                    authors={allAuthors}
                     selectedCategories={selectedCategories}
                     selectedAuthors={selectedAuthors}
                     onCategoryChange={handleCategoryToggle}
@@ -175,7 +193,7 @@ const AllBooksPage = () => {
                 <div className="flex-1 w-full min-w-0">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
                         <p className="text-gray-600 dark:text-gray-400 font-medium">
-                            Showing <span className="text-blue-600 dark:text-blue-400 font-bold">{paginatedBooks.length}</span> of <span className="text-gray-900 dark:text-white font-bold">{filteredBooks.length}</span> results
+                            Showing <span className="text-blue-600 dark:text-blue-400 font-bold">{books.length}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalBooks}</span> results
                         </p>
                         <div className="flex items-center gap-3 w-full sm:w-auto">
                             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 hidden sm:block whitespace-nowrap">Sort by:</span>
@@ -209,7 +227,7 @@ const AllBooksPage = () => {
                                 <BookCardSkeleton key={i} />
                             ))}
                         </div>
-                    ) : paginatedBooks.length === 0 ? (
+                    ) : books.length === 0 ? (
                         <div className="text-center py-24 flex flex-col items-center gap-4 bg-gray-50/50 dark:bg-gray-800/20 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800">
                             <SearchX className="h-16 w-16 text-gray-300 dark:text-gray-700" />
                             <div>
@@ -222,7 +240,7 @@ const AllBooksPage = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 xs:gap-4 sm:gap-8">
-                            {paginatedBooks.map((book, idx) => (
+                            {books.map((book, idx) => (
                                 <BookCard 
                                     key={book.id} 
                                     book={book} 
@@ -236,16 +254,18 @@ const AllBooksPage = () => {
                     )}
 
                     {/* Pagination Bottom */}
-                    <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-center">
-                        <Pagination 
-                            currentPage={currentPage} 
-                            totalPages={totalPages} 
-                            onPageChange={(page) => {
-                                setCurrentPage(page);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                        />
-                    </div>
+                    {totalPages > 1 && (
+                        <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-center">
+                            <Pagination 
+                                currentPage={currentPage} 
+                                totalPages={totalPages} 
+                                onPageChange={(page) => {
+                                    setCurrentPage(page);
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

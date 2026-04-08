@@ -19,6 +19,7 @@ import {
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useAuth } from "@/providers/auth-provider";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 
 export default function MyMembershipPage() {
   const [membership, setMembership] = useState<Membership | null>(null);
@@ -54,14 +55,7 @@ export default function MyMembershipPage() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground animate-pulse">Loading your membership details...</p>
-        </div>
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   const getPlanIcon = (planName: string = "") => {

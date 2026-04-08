@@ -12,10 +12,10 @@ import {
   CreditCardIcon, 
   CheckCircle2Icon, 
   AlertCircleIcon, 
-  Loader2Icon,
   TrendingUpIcon,
   CalendarIcon
 } from "lucide-react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +37,7 @@ export default function DashboardPage() {
     myBorrowings: [],
     membership: null
   });
+  const [counts, setCounts] = useState({ totalBooks: 0, availableBooks: 0, borrowedBooks: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -46,12 +47,18 @@ export default function DashboardPage() {
         const normalize = (res: any) => Array.isArray(res) ? res : (res?.data || []);
         
         const [booksRes, categoriesRes] = await Promise.all([
-          bookApi.getAll().catch(() => []),
+          bookApi.getAll().catch(() => ({ data: [], meta: { total: 0, available: 0, borrowed: 0 } })),
           categoryApi.getAll().catch(() => [])
         ]);
 
         const books = normalize(booksRes);
         const categories = normalize(categoriesRes);
+        const meta = (booksRes as any).meta || { total: 0, available: 0, borrowed: 0 };
+        setCounts({
+          totalBooks: meta.total || books.length,
+          availableBooks: meta.available !== undefined ? meta.available : books.filter((b: any) => b.availability).length,
+          borrowedBooks: meta.borrowed !== undefined ? meta.borrowed : (meta.total || books.length) - (meta.available || 0)
+        });
 
         let users: User[] = [];
         let borrowings: Borrowing[] = [];
@@ -98,25 +105,21 @@ export default function DashboardPage() {
   // Stats for Admin
   const adminStats = useMemo(() => [
     { title: "Total Users", value: data.users.length, icon: UsersIcon, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { title: "Total Books", value: data.books.length, icon: BookOpenIcon, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { title: "Total Books", value: counts.totalBooks, icon: BookOpenIcon, color: "text-emerald-500", bg: "bg-emerald-500/10" },
     { title: "Categories", value: data.categories.length, icon: LayersIcon, color: "text-amber-500", bg: "bg-amber-500/10" },
     { title: "Active Borrowings", value: data.borrowings.filter(b => b.status === 'BORROWED').length, icon: ShoppingBagIcon, color: "text-rose-500", bg: "bg-rose-500/10" }
-  ], [data]);
+  ], [data, counts]);
 
   // Stats for User
   const userStats = useMemo(() => [
     { title: "My Borrowings", value: data.myBorrowings.length, icon: ShoppingBagIcon, color: "text-rose-500", bg: "bg-rose-500/10" },
-    { title: "Available Books", value: data.books.filter(b => b.availability).length, icon: BookOpenIcon, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { title: "Available Books", value: counts.availableBooks, icon: BookOpenIcon, color: "text-emerald-500", bg: "bg-emerald-500/10" },
     { title: "Membership", value: data.membership?.status || "INACTIVE", icon: CreditCardIcon, color: "text-blue-500", bg: "bg-blue-500/10" },
     { title: "Status", value: user?.status || "PENDING", icon: CheckCircle2Icon, color: "text-amber-500", bg: "bg-amber-500/10" }
-  ], [data, user]);
+  ], [data, user, counts]);
 
   if (isLoading) {
-    return (
-      <div className="flex h-[70vh] items-center justify-center">
-        <Loader2Icon className="h-10 w-10 animate-spin text-primary opacity-20" />
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   return (

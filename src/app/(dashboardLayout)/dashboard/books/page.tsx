@@ -28,15 +28,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "motion/react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 
 export default function BooksPage() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [meta, setMeta] = useState({ total: 0, available: 0, borrowed: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchBooks = async () => {
     try {
-      const data = await bookApi.getAll();
-      setBooks(Array.isArray(data) ? data : (data as any).data || []);
+      const response = await bookApi.getAll();
+      const bookItems = (response as any).data || [];
+      const metaData = (response as any).meta || { total: 0, available: 0, borrowed: 0 };
+      
+      setBooks(bookItems);
+      setMeta(metaData);
     } catch (error) {
       console.error("Failed to fetch books:", error);
     } finally {
@@ -49,9 +55,9 @@ export default function BooksPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const total = books.length;
-    const available = books.filter(b => b.availability).length;
-    const borrowed = total - available;
+    const total = meta.total;
+    const available = meta.available;
+    const borrowed = meta.borrowed;
     const categories = new Set(books.map(b => b.categoryId)).size;
     return [
       { title: "Total Books", value: total, icon: BookOpenIcon, color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -59,7 +65,7 @@ export default function BooksPage() {
       { title: "Borrowed", value: borrowed, icon: ShoppingBagIcon, color: "text-rose-500", bg: "bg-rose-500/10" },
       { title: "Active Categories", value: categories, icon: LayersIcon, color: "text-amber-500", bg: "bg-amber-500/10" }
     ];
-  }, [books]);
+  }, [books, meta]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -71,7 +77,7 @@ export default function BooksPage() {
     }
   };
 
-  if (isLoading) return <div className="p-4 flex items-center justify-center h-64"><p className="text-muted-foreground">Loading books...</p></div>;
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="space-y-6">

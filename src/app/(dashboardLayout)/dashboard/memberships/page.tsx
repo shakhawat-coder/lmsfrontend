@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { CreditCardIcon, UserIcon, Trash2Icon, CheckCircle2Icon, AlertCircleIcon, ShieldCheckIcon, CalendarIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "motion/react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -78,7 +79,7 @@ export default function MembershipsPage() {
     }
   };
 
-  if (isLoading) return <div className="p-4 flex h-64 items-center justify-center text-muted-foreground">Loading memberships...</div>;
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="space-y-6">

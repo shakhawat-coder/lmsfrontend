@@ -26,6 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import { Input } from "@/components/ui/input";
 
 export default function MyBorrowingsPage() {
@@ -93,14 +94,7 @@ export default function MyBorrowingsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground animate-pulse">Fetching your reading history...</p>
-        </div>
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   const activeBorrowings = borrowings.filter(b => b.status === 'BORROWED');

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircleIcon, PencilIcon, Trash2Icon, CreditCardIcon, ArrowLeftIcon, SaveIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { motion, AnimatePresence } from "motion/react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -150,7 +151,7 @@ export default function MembershipPlansPage() {
     }
   };
 
-  if (isLoading && view === "list") return <div className="p-4 flex h-64 items-center justify-center text-muted-foreground">Loading plans...</div>;
+  if (isLoading && view === "list") return <DashboardLoading />;
 
   return (
     <div className="space-y-6">

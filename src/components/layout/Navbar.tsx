@@ -213,30 +213,30 @@ const Navbar = ({
             <form className="relative mr-2" onSubmit={handleSearchSubmit}>
               <Input
                 placeholder="Search books..."
-                className="pr-8 h-10"
+                className="pr-8 h-10 border-2 border-gray-300 dark:border-gray-700"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
-                <Search className="h-4 w-4" />
+                <Search className="h-6 w-6 text-black dark:text-white bg-white dark:bg-gray-950 rounded-md cursor-pointer" />
               </Button>
             </form>
 
             <ModeToggle />
 
             {isLoading ? (
-              <div className="h-8 w-20 animate-pulse rounded-md bg-muted"></div>
+              <div className="h-10 w-10 animate-pulse rounded-full bg-muted"></div>
             ) : user ? (
               <div className="relative">
-                <Button
+                <Button 
                   variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-2 hover:bg-transparent"
+                  size="sm" 
+                  className="flex items-center gap-2  h-10 w-10 rounded-full bg-white dark:bg-black"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="h-10 w-10 "> 
                     <AvatarImage src={user.image || ""} alt={user.name} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
+                    <AvatarFallback className="bg-white dark:bg-black">
                       {user.name?.charAt(0) || <User className="h-4 w-4" />}
                     </AvatarFallback>
                   </Avatar>

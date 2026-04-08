@@ -12,7 +12,8 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit2Icon, Trash2Icon, PlusIcon, Loader2Icon, LayersIcon, BookOpenIcon, CheckCircle2Icon } from "lucide-react";
+import { Edit2Icon, Trash2Icon, PlusIcon, LayersIcon, BookOpenIcon, CheckCircle2Icon } from "lucide-react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import Link from "next/link";
 import { 
   AlertDialog, 
@@ -70,7 +71,7 @@ export default function CategoriesPage() {
     }
   };
 
-  if (isLoading) return <div className="p-4 flex h-64 items-center justify-center text-muted-foreground"><Loader2Icon className="animate-spin mr-2" /> Loading categories...</div>;
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="space-y-6">

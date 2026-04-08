@@ -45,6 +45,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "motion/react";
 import { toast } from "sonner";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 
 interface ContactMessage {
   id: string;
@@ -128,12 +129,7 @@ export default function ContactsPage() {
     }
   };
 
-  if (isLoading) return (
-    <div className="p-8 flex flex-col items-center justify-center min-h-[400px] space-y-4">
-      <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-      <p className="text-muted-foreground animate-pulse font-medium">Fetching messages...</p>
-    </div>
-  );
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-8 pb-12">

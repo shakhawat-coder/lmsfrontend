@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "motion/react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 
 export default function BlogsManagementPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -68,7 +69,7 @@ export default function BlogsManagementPage() {
     }
   };
 
-  if (isLoading) return <div className="p-4 flex items-center justify-center h-64"><p className="text-muted-foreground">Loading articles...</p></div>;
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="space-y-6 pb-20">

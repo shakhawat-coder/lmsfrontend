@@ -27,6 +27,7 @@ import {
   MailIcon,
   CheckIcon
 } from "lucide-react";
+import { DashboardLoading } from "@/components/layout/DashboardLoading";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "motion/react";
@@ -133,12 +134,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (isLoading) return (
-    <div className="p-12 flex flex-col items-center justify-center min-h-[400px] space-y-4">
-      <Loader2Icon className="w-10 h-10 text-blue-600 animate-spin" />
-      <p className="text-muted-foreground font-medium animate-pulse">Establishing secure session...</p>
-    </div>
-  );
+  if (isLoading) return <DashboardLoading />;
 
   return (
     <div className="max-w-[1100px] mx-auto space-y-10 pb-20">
