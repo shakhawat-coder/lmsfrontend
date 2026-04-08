@@ -150,7 +150,7 @@ const AboutPage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-slate-50 dark:bg-slate-900/50 py-20">
+      <section className="bg-slate-50 dark:bg-zinc-900/10 py-20">
         <div className="container px-4">
           <motion.div
             variants={containerVariants}
@@ -165,8 +165,8 @@ const AboutPage = () => {
                 variants={itemVariants}
                 className="text-center group"
               >
-                <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <stat.icon className="w-8 h-8 text-blue-600" />
+                <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-transparent dark:border-zinc-800 shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-3xl font-bold text-foreground">{stat.value}</h3>
                 <p className="text-muted-foreground font-medium">{stat.label}</p>
@@ -204,7 +204,7 @@ const AboutPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="p-8 rounded-3xl border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-white dark:bg-gray-900/50"
+              className="p-8 rounded-3xl border border-gray-100 dark:border-zinc-800 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-white dark:bg-zinc-900/50"
             >
               <div className={`w-14 h-14 rounded-2xl ${value.color} flex items-center justify-center mb-6`}>
                 <value.icon className="w-7 h-7" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Book, Menu, Search, Sunset, Trees, Zap, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
@@ -137,6 +137,7 @@ const Navbar = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     try {
@@ -213,12 +214,12 @@ const Navbar = ({
             <form className="relative mr-2" onSubmit={handleSearchSubmit}>
               <Input
                 placeholder="Search books..."
-                className="pr-8 h-10 border-2 border-gray-300 dark:border-gray-700"
+                className="pr-10 h-10 border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-black/90 backdrop-blur-md focus:shadow-none focus:bg-white/90 dark:focus:bg-black/90 transition-all placeholder:text-gray-900 dark:placeholder:text-gray-100"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
-                <Search className="h-6 w-6 text-black dark:text-white bg-white dark:bg-gray-950 rounded-md cursor-pointer" />
+              <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-8 w-8 p-0 hover:bg-transparent">
+                <Search className="h-5 w-5 text-gray-500 hover:text-primary transition-colors" />
               </Button>
             </form>
 
@@ -227,12 +228,16 @@ const Navbar = ({
             {isLoading ? (
               <div className="h-10 w-10 animate-pulse rounded-full bg-muted"></div>
             ) : user ? (
-              <div className="relative">
+              <div
+                className="relative"
+                ref={dropdownRef}
+                onMouseEnter={() => setIsDropdownOpen(true)}
+                onMouseLeave={() => setIsDropdownOpen(false)}
+              >
                 <Button 
                   variant="ghost"
                   size="sm" 
                   className="flex items-center gap-2  h-10 w-10 rounded-full bg-white dark:bg-black"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <Avatar className="h-10 w-10 "> 
                     <AvatarImage src={user.image || ""} alt={user.name} />
@@ -243,7 +248,8 @@ const Navbar = ({
                 </Button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1 shadow-lg z-[100]">
+                  <div className="absolute right-0 top-full pt-2 w-48 z-[100]">
+                  <div className="rounded-md border bg-popover p-1 shadow-lg">
                     <Button asChild variant="ghost" className="w-full justify-start gap-2" size="sm" onClick={() => {
                       setIsDropdownOpen(false);
                     }}>
@@ -266,6 +272,7 @@ const Navbar = ({
                       Logout
                     </Button>
                   </div>
+                  </div>
                 )}
               </div>
             ) : (
@@ -283,18 +290,33 @@ const Navbar = ({
 
         {/* Mobile Menu */}
         <div className="block lg:hidden">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             {/* Logo */}
-            <Link href={logo.url} className="flex items-center gap-2">
+            <Link href={logo.url} className="flex items-center gap-2 shrink-0">
               <img
                 src={logo.src}
                 className="max-h-8 dark:invert"
                 alt={logo.alt}
               />
             </Link>
+
+            {/* Inline Search Bar */}
+            <form className="relative flex-1 mx-1" onSubmit={handleSearchSubmit}>
+              <Input
+                placeholder="Search books..."
+                className="pr-9 h-9 text-sm bg-white/90 dark:bg-black/90 border-gray-200 dark:border-gray-800"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button type="submit" size="sm" variant="ghost" className="absolute right-0.5 top-0.5 h-8 w-8 p-0 hover:bg-transparent">
+                <Search className="h-4 w-4 text-gray-500" />
+              </Button>
+            </form>
+
+            <ModeToggle />
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="shrink-0">
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -311,23 +333,12 @@ const Navbar = ({
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
-                  <form className="relative" onSubmit={handleSearchSubmit}>
-                    <Input
-                      placeholder="Search books..."
-                      className="pr-8"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <Button type="submit" size="sm" variant="ghost" className="absolute right-1 top-1 h-7 w-7 p-0">
-                      <Search className="h-4 w-4" />
-                    </Button>
-                  </form>
                   <Accordion
                     type="single"
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
+                    {menu.map((item) => renderMobileMenuItem(item, () => setIsMobileMenuOpen(false)))}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
@@ -391,7 +402,7 @@ const renderMenuItem = (item: MenuItem) => {
         <NavigationMenuContent className="bg-popover text-popover-foreground">
           {item.items.map((subItem) => (
             <NavigationMenuLink asChild key={subItem.title} className="w-80">
-              <SubMenuLink item={subItem} />
+              <SubMenuLink item={subItem} href={subItem.url} />
             </NavigationMenuLink>
           ))}
         </NavigationMenuContent>
@@ -413,7 +424,7 @@ const renderMenuItem = (item: MenuItem) => {
   );
 };
 
-const renderMobileMenuItem = (item: MenuItem) => {
+const renderMobileMenuItem = (item: MenuItem, closeMenu: () => void) => {
   if (item.items) {
     return (
       <AccordionItem key={item.title} value={item.title} className="border-b-0">
@@ -422,7 +433,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
         </AccordionTrigger>
         <AccordionContent className="mt-2">
           {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
+            <SubMenuLink key={subItem.title} item={subItem} href={subItem.url} onClick={closeMenu} />
           ))}
         </AccordionContent>
       </AccordionItem>
@@ -430,7 +441,12 @@ const renderMobileMenuItem = (item: MenuItem) => {
   }
 
   return (
-    <Link key={item.title} href={item.url} className="text-md font-semibold">
+    <Link 
+      key={item.title} 
+      href={item.url} 
+      className="text-md font-semibold"
+      onClick={closeMenu}
+    >
       {item.title}
     </Link>
   );
@@ -438,7 +454,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 
 const SubMenuLink = React.forwardRef<
   HTMLAnchorElement,
-  { item: MenuItem; className?: string }
+  React.ComponentPropsWithoutRef<typeof Link> & { item: MenuItem }
 >(({ item, className, ...props }, ref) => {
   return (
     <Link
@@ -447,7 +463,6 @@ const SubMenuLink = React.forwardRef<
         "flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground",
         className
       )}
-      href={item.url}
       {...props}
     >
       <div className="text-foreground">{item.icon}</div>

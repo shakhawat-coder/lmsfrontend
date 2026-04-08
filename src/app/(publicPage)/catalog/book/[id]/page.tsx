@@ -258,9 +258,6 @@ const BookDetailsPage = () => {
                                     {isBorrowing ? <Loader2Icon className="w-6 h-6 mr-3 animate-spin" /> : <BookOpen className="w-6 h-6 mr-3" />}
                                     {isBorrowing ? 'Borrowing...' : book.availability ? 'Borrow This Book' : 'Currently Unavailable'}
                                 </Button>
-                                <Button size="lg" variant="outline" className="h-16 px-10 text-lg font-bold rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-900 transition-all border-2">
-                                    Read Preview
-                                </Button>
                             </div>
                         </motion.div>
                     </div>

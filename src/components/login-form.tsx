@@ -158,6 +158,17 @@ export function LoginForm({
     }
   };
 
+  const fillCredentials = (role: "superadmin" | "admin" | "user") => {
+    const creds = {
+      superadmin: { email: "admin@example.com", password: "Admin@12345" },
+      admin: { email: "shakhawathossen.orchid@gmail.com", password: "12345678" },
+      user: { email: "shakhawathossen188@gmail.com", password: "12345678" },
+    };
+    setFormData(creds[role]);
+    setErrors({});
+    setApiError(null);
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -229,6 +240,47 @@ export function LoginForm({
                   </svg>
                   Login with Google
                 </Button>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Demo Access
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-[11px] px-1"
+                    onClick={() => fillCredentials("superadmin")}
+                  >
+                    SuperAdmin
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-[11px] px-1"
+                    onClick={() => fillCredentials("admin")}
+                  >
+                    Admin
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-[11px] px-1"
+                    onClick={() => fillCredentials("user")}
+                  >
+                    User
+                  </Button>
+                </div>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <Link href="/signup" className="underline underline-offset-4 group-hover:text-primary">Sign up</Link>
                 </FieldDescription>

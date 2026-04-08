@@ -6,7 +6,7 @@ import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 import { motion } from "motion/react";
 import { bannerApi, Banner as BannerType } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { Loader2Icon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -14,15 +14,52 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Link from 'next/link';
 
+// Global cache variable to store banners between component mounts
+let cachedBanners: BannerType[] | null = null;
+
+const BannerSkeleton = () => (
+    <div className="w-full h-[80vh] lg:min-h-150 relative bg-zinc-950 overflow-hidden">
+        {/* Pulsing overlay to mimic the dark banner feel */}
+        <div className="absolute inset-0 bg-black/40 animate-pulse" />
+        <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center px-4 max-w-4xl mx-auto flex flex-col items-center w-full">
+                <Skeleton className="h-12 md:h-16 w-3/4 mb-6 bg-white/10" />
+                <Skeleton className="h-6 md:h-8 w-1/2 mb-8 bg-white/5" />
+                <Skeleton className="h-12 md:h-14 w-40 rounded-full bg-blue-600/20" />
+            </div>
+        </div>
+        {/* Navigation buttons skeleton */}
+        <div className="hidden md:flex absolute inset-y-0 left-4 items-center">
+            <Skeleton className="h-12 w-12 rounded-full bg-white/5" />
+        </div>
+        <div className="hidden md:flex absolute inset-y-0 right-4 items-center">
+            <Skeleton className="h-12 w-12 rounded-full bg-white/5" />
+        </div>
+        {/* Pagination dots skeleton */}
+        <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-3">
+            <Skeleton className="h-2 w-8 rounded-full bg-blue-600/30" />
+            <Skeleton className="h-2 w-2 rounded-full bg-white/10" />
+            <Skeleton className="h-2 w-2 rounded-full bg-white/10" />
+        </div>
+    </div>
+);
+
 const Banner = () => {
-    const [banners, setBanners] = useState<BannerType[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [banners, setBanners] = useState<BannerType[]>(cachedBanners || []);
+    const [isLoading, setIsLoading] = useState(!cachedBanners);
 
     useEffect(() => {
+        // If we already have banners in cache, don't fetch again
+        if (cachedBanners) {
+            return;
+        }
+
         const fetchBanners = async () => {
             try {
                 const res = await bannerApi.getAll(true);
-                setBanners(Array.isArray(res) ? res : (res as any)?.data || []);
+                const data = Array.isArray(res) ? res : (res as any)?.data || [];
+                setBanners(data);
+                cachedBanners = data; // Store in cache for future renders
             } catch (error) {
                 console.error("Failed to fetch banners:", error);
             } finally {
@@ -33,11 +70,7 @@ const Banner = () => {
     }, []);
 
     if (isLoading) { 
-        return (
-            <div className="w-full h-[80vh] min-h-150 flex items-center justify-center bg-gray-900">
-                <Loader2Icon className="h-10 w-10 animate-spin text-blue-500 opacity-50" />
-            </div>
-        );
+        return <BannerSkeleton />;
     }
 
     if (banners.length === 0) {
@@ -46,7 +79,7 @@ const Banner = () => {
 
     return (
         <div className="w-full h-[80vh] lg:min-h-150 relative group overflow-hidden">
-            <Swiper
+            < Swiper
                 spaceBetween={0}
                 effect={'fade'}
                 navigation={true}
@@ -155,4 +188,4 @@ const Banner = () => {
     );
 };
 
-export default Banner;
+export default Banner;

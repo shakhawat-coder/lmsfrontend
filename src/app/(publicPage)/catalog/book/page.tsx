@@ -47,21 +47,42 @@ const AllBooksPage = () => {
         }
     }, [searchParams]);
 
-    // Fetch categories once
+    // Fetch categories (with books only) and all authors in one shot
+    const [allAuthors, setAllAuthors] = useState<string[]>([]);
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchSidebarData = async () => {
             try {
-                const categoriesData = await categoryApi.getAll();
-                const categoryItems = Array.isArray(categoriesData) ? categoriesData : (categoriesData as any).data || [];
-                setCategories(categoryItems);
+                const [categoriesData, booksResponse] = await Promise.all([
+                    categoryApi.getAll(),
+                    bookApi.getAll({ limit: 1000 }),
+                ]);
+
+                const allBooks: any[] = (booksResponse as any).data || [];
+
+                // Filter categories: only show those that have at least one book
+                const categoryItems: Category[] = Array.isArray(categoriesData)
+                    ? categoriesData
+                    : (categoriesData as any).data || [];
+                const categoryIdsWithBooks = new Set(allBooks.map((b: any) => b.categoryId));
+                const filteredCategories = categoryItems.filter(cat =>
+                    (cat.books && cat.books.length > 0) || categoryIdsWithBooks.has(cat.id)
+                );
+                setCategories(filteredCategories);
+
+                // Extract unique authors
+                const uniqueAuthors = new Set<string>();
+                allBooks.forEach((book: any) => {
+                    if (book.author) uniqueAuthors.add(book.author);
+                });
+                setAllAuthors(Array.from(uniqueAuthors).sort());
             } catch (error) {
-                console.error("Failed to fetch categories:", error);
+                console.error("Failed to fetch sidebar data:", error);
             }
         };
-        fetchCategories();
+        fetchSidebarData();
     }, []);
 
-    // Main data fetching effect
+    // Main data fetching effect — runs on filter/page changes
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
@@ -76,22 +97,14 @@ const AllBooksPage = () => {
                 if (selectedAuthors.length > 0) params.author = selectedAuthors;
                 if (onlyAvailable) params.availability = true;
 
-                // Sort mapping
-                if (sortBy === "A-Z") {
-                    params.sortBy = "title";
-                    params.sortOrder = "asc";
-                } else if (sortBy === "Z-A") {
-                    params.sortBy = "title";
-                    params.sortOrder = "desc";
-                } else if (sortBy === "Newest Arrivals") {
-                    params.sortBy = "createdAt";
-                    params.sortOrder = "desc";
-                }
+                if (sortBy === "A-Z") { params.sortBy = "title"; params.sortOrder = "asc"; }
+                else if (sortBy === "Z-A") { params.sortBy = "title"; params.sortOrder = "desc"; }
+                else if (sortBy === "Newest Arrivals") { params.sortBy = "createdAt"; params.sortOrder = "desc"; }
 
                 const response = await bookApi.getAll(params);
                 const bookItems = (response as any).data || [];
                 const meta = (response as any).meta || { total: 0 };
-                
+
                 setBooks(bookItems);
                 setTotalBooks(meta.total);
             } catch (error) {
@@ -100,31 +113,8 @@ const AllBooksPage = () => {
                 setIsLoading(false);
             }
         };
-
         fetchData();
     }, [currentPage, searchTerm, selectedCategories, selectedAuthors, sortBy, onlyAvailable]);
-
-    // Extract unique authors (This is still tricky without a dedicated endpoint or full fetch)
-    // For now, we'll keep the ones we have in the current view or fetch them all once.
-    // To properly support authors filter from backend, we should ideally have an authors endpoint.
-    // As a workaround, we'll fetch all books once to get all unique authors.
-    const [allAuthors, setAllAuthors] = useState<string[]>([]);
-    useEffect(() => {
-        const fetchAllAuthors = async () => {
-            try {
-                const response = await bookApi.getAll({ limit: 1000 }); // Large limit to get most books
-                const allBooks = (response as any).data || [];
-                const uniqueAuthors = new Set<string>();
-                allBooks.forEach((book: any) => {
-                    if (book.author) uniqueAuthors.add(book.author);
-                });
-                setAllAuthors(Array.from(uniqueAuthors).sort());
-            } catch (error) {
-                console.error("Failed to fetch authors:", error);
-            }
-        };
-        fetchAllAuthors();
-    }, []);
 
     const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
 

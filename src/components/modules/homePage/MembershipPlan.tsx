@@ -18,7 +18,6 @@ const MembershipPlan = () => {
     const fetchPlans = async () => {
       try {
         const res = await membershipPlanApi.getAll();
-        console.log(res);
         const data = Array.isArray(res) ? res : (res as any).data || [];
         setPlans(data);
       } catch (error) {
@@ -68,7 +67,7 @@ const MembershipPlan = () => {
         {isLoading ? (
           <div className="flex flex-wrap justify-center gap-8 max-w-7xl mx-auto py-10">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="w-full md:w-[350px] aspect-[4/5] bg-white rounded-2xl border border-gray-100 p-8 space-y-6 shadow-sm animate-pulse">
+              <div key={i} className="w-full md:w-[350px] aspect-[4/5] bg-card rounded-2xl border border-border p-8 space-y-6 shadow-sm animate-pulse">
                 <div className="space-y-3 flex flex-col items-center">
                    <Skeleton className="h-4 w-24 rounded-full" />
                    <Skeleton className="h-8 w-48 rounded-lg" />
@@ -104,7 +103,7 @@ const MembershipPlan = () => {
                     whileHover={{ y: -10 }}
                     className="flex"
                   >
-                    <div className={`relative w-full md:w-[360px] bg-card rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-border shadow-xl shadow-gray-200/50 dark:shadow-none'
+                    <div className={`relative w-full md:w-[360px] bg-card rounded-[2.5rem] border ${isPopular ? 'border-blue-600 shadow-3xl z-10 md:scale-105 ring-4 ring-blue-500/5' : 'border-border shadow-xl dark:shadow-none'
                       } p-10 flex flex-col w-full h-full transition-all duration-500`}
                     >
                       {isPopular && (
@@ -126,7 +125,7 @@ const MembershipPlan = () => {
                       </div>
     
                       <div className="space-y-5 flex-1 mb-12">
-                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest border-b border-blue-50 pb-2 inline-block">Plan Features</p>
+                        <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-b border-blue-50 dark:border-blue-900/40 pb-2 inline-block">Plan Features</p>
                         <ul className="space-y-4">
                           {plan.features?.map((feature: string, i: number) => (
                             <li key={i} className="flex items-center gap-4 group">
@@ -143,7 +142,7 @@ const MembershipPlan = () => {
                         onClick={() => handlePlanSelect(plan.id)}
                         className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${isPopular
                             ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/40 hover:-translate-y-1'
-                            : 'bg-gray-900 text-white hover:bg-black hover:shadow-gray-900/40'
+                            : 'bg-gray-900 dark:bg-zinc-800 text-white hover:bg-black dark:hover:bg-zinc-700 hover:shadow-gray-900/40'
                           }`}
                       >
                         {getButtonText(plan.name)}
@@ -154,7 +153,7 @@ const MembershipPlan = () => {
               })
             ) : (
               <div className="text-center py-10">
-                <p className="text-muted-foreground bg-white p-8 rounded-2xl shadow-sm border">No membership plans available at the moment. Please check back later.</p>
+                <p className="text-muted-foreground bg-card p-8 rounded-2xl shadow-sm border border-border">No membership plans available at the moment. Please check back later.</p>
               </div>
             )}
           </div>

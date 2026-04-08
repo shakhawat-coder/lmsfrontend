@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import CategoryCard from '@/components/commonComponents/CategoryCard';
-import { categoryApi, Category } from '@/lib/api';
-import { Loader2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { categoryApi, bookApi, Category } from '@/lib/api';
 import CategoryCardSkeleton from './CategoryCardSkeleton';
 
 const CategoriesPage = () => {
@@ -14,9 +12,25 @@ const CategoriesPage = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const data = await categoryApi.getAll();
-                const items = Array.isArray(data) ? data : (data as any).data || [];
-                setCategories(items);
+                const [catData, bookData] = await Promise.all([
+                    categoryApi.getAll(),
+                    bookApi.getAll({ limit: 1000 }),
+                ]);
+
+                const items: Category[] = Array.isArray(catData) ? catData : (catData as any).data || [];
+                const books: any[] = Array.isArray(bookData) ? bookData : (bookData as any).data || [];
+
+                // Build a Set of categoryIds that have at least one book
+                const categoryIdsWithBooks = new Set(books.map((b: any) => b.categoryId));
+
+                // Keep categories that either have books in their nested array
+                // OR appear in the cross-referenced books list
+                const withBooks = items.filter(cat =>
+                    (cat.books && cat.books.length > 0) ||
+                    categoryIdsWithBooks.has(cat.id)
+                );
+
+                setCategories(withBooks);
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
             } finally {

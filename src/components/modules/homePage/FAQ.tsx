@@ -45,7 +45,7 @@ const faqs: FAQItem[] = [
 const FAQ = () => {
   return (
     <section className="py-24 w-full relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/30 -z-0 rounded-l-full blur-3xl opacity-60"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/30 dark:bg-blue-900/10 -z-0 rounded-l-full blur-3xl opacity-60"></div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-5 gap-12 items-start">
@@ -59,25 +59,22 @@ const FAQ = () => {
               transition={{ duration: 0.6 }}
               className="sticky top-24"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
-                <HelpCircle className="w-4 h-4" />
-                <span>Support Center</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+             
+              <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
                 Frequently Asked <br />
-                <span className="text-blue-600">Questions</span>
+                <span className="text-blue-600 dark:text-blue-500">Questions</span>
               </h2>
-              <p className="text-lg text-gray-600 mb-8 max-w-md">
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md">
                 Find answers to common questions about our library services, memberships, and digital resources. Still need help? Contact our support team.
               </p>
               
-              <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center gap-4 group hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-blue-600 group-hover:scale-110 transition-transform">
+              <div className="p-6 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center gap-4 group hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-xl flex items-center justify-center shadow-sm text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                   <HelpCircle className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900">Have more questions?</h4>
-                  <p className="text-sm text-gray-500">Reach out to us at <span className="text-blue-600 font-medium">support@booknest.com</span></p>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Have more questions?</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Reach out to us at <span className="text-blue-600 dark:text-blue-400 font-medium">support@booknest.com</span></p>
                 </div>
               </div>
             </motion.div>
@@ -96,12 +93,12 @@ const FAQ = () => {
                   <AccordionItem 
                     key={index} 
                     value={`item-${index}`}
-                    className="border border-zinc-100 rounded-2xl bg-white px-2 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                    className="border border-zinc-100 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900/40 px-2 overflow-hidden shadow-sm hover:shadow-md dark:hover:bg-zinc-900/60 transition-all"
                   >
-                    <AccordionTrigger className="text-lg font-bold text-gray-800 hover:text-blue-600 py-6 px-4 no-underline hover:no-underline">
+                    <AccordionTrigger className="text-lg font-bold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 py-6 px-4 no-underline hover:no-underline">
                       {faq.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-zinc-600 leading-relaxed text-[16px] pb-6 px-4 pt-0">
+                    <AccordionContent className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[16px] pb-6 px-4 pt-0">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>

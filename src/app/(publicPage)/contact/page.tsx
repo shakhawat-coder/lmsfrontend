@@ -115,7 +115,7 @@ const ContactPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Header */}
-      <section className="bg-slate-50 dark:bg-slate-930 py-20 border-b border-gray-100 dark:border-gray-800">
+      <section className="bg-slate-50 dark:bg-zinc-900/20 py-20 border-b border-gray-100 dark:border-zinc-800">
         <div className="container px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -163,7 +163,7 @@ const ContactPage = () => {
                   variants={itemVariants}
                   className="flex items-start gap-4 group p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                 >
-                  <div className={`p-3 rounded-xl ${item.color} dark:bg-opacity-10 dark:text-opacity-90 transition-transform group-hover:scale-110`}>
+                  <div className={`p-3 rounded-xl ${item.color} dark:bg-zinc-800 dark:text-blue-400 transition-transform group-hover:scale-110`}>
                     <item.icon className="w-6 h-6" />
                   </div>
                   <div>
@@ -197,10 +197,10 @@ const ContactPage = () => {
             <Card className="border-none shadow-2xl rounded-[2rem] overflow-hidden">
               <CardHeader className="p-8 pb-4">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="text-blue-600 font-bold uppercase tracking-wider text-xs">Direct Support</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider text-xs">Direct Support</span>
                 </div>
                 <CardTitle className="text-3xl font-bold">Send us a Message</CardTitle>
                 <CardDescription className="text-lg">
@@ -214,7 +214,7 @@ const ContactPage = () => {
                     animate={{ scale: 1, opacity: 1 }}
                     className="text-center py-12"
                   >
-                    <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
                       <Send className="w-10 h-10" />
                     </div>
                     <h3 className="text-2xl font-bold mb-2 text-foreground">Message Sent!</h3>

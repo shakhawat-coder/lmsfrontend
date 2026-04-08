@@ -90,16 +90,16 @@ const Footer = ({
 
   const contactInfo = [
     { icon: MapPin, text: "123 Library Plaza, Wisdom City, NY 10001" },
-    { icon: Phone, text: "+1 (555) 000-BOOK" },
-    { icon: Mail, text: "hello@booknest.com" },
+    { icon: Phone, text: "01780551403", url: "tel:01780551403" },
+    { icon: Mail, text: "shakhawathossen188@gmail.com", url: "mailto:shakhawathossen188@gmail.com" },
   ];
 
   return (
     <section className={cn("pt-24 pb-12 px-5 lg:px-0 bg-muted/30 dark:bg-zinc-950/30 border-t border-border", className)}>
       <div className="container mx-auto">
         <footer>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
-            <div className="md:col-span-2 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-12 lg:gap-8">
+            <div className="md:col-span-1 lg:col-span-2 space-y-8">
               <div className="flex items-center gap-2">
                 <Logo url="/">
                   <LogoImage
@@ -128,7 +128,7 @@ const Footer = ({
               </div>
             </div>
 
-            <div className="col-span-1 md:col-span-2 lg:col-span-1">
+            <div className="col-span-1 md:col-span-1 lg:col-span-2">
                 <h3 className="mb-8 font-black uppercase tracking-[0.2em] text-[10px] text-blue-600">Contact Us</h3>
                 <ul className="space-y-6">
                   {contactInfo.map((info, idx) => {
@@ -138,9 +138,15 @@ const Footer = ({
                         <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 group-hover:scale-110 transition-transform">
                             <Icon className="w-4 h-4 shrink-0" />
                         </div>
-                        <span className="text-muted-foreground leading-snug">{info.text}</span>
+                        {info.url ? (
+                          <a href={info.url} className="text-muted-foreground leading-snug hover:text-blue-600 transition-colors">
+                            {info.text}
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground leading-snug">{info.text}</span>
+                        )}
                       </li>
-                    )
+                    ) 
                   })}
                 </ul>
             </div>

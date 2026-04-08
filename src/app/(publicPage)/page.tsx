@@ -7,6 +7,7 @@ import Testimonial from "@/components/modules/homePage/Testimonial";
 import Cta from "@/components/modules/homePage/Cta";
 import FAQ from "@/components/modules/homePage/FAQ";
 import BlogSection from "@/components/modules/homePage/BlogSection";
+import HowItWorks from "@/components/modules/homePage/HowItWorks";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <Categories />
         <MostReadedBooks />
         <Statistics />
+        <HowItWorks />
         <MembershipPlan />
         <FAQ />
         <Testimonial />

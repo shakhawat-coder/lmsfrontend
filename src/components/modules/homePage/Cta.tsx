@@ -12,7 +12,7 @@ const Cta = () => {
   return (
     <section className="w-full relative py-24 bg-white dark:bg-black overflow-hidden relative">
       <div className="container mx-auto px-4 relative z-10">
-        <div className="bg-gradient-to-br from-blue-400 to-indigo-600 rounded-3xl p-8 md:p-16 lg:p-20 shadow-2xl relative overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-3xl p-8 md:p-16 lg:p-20 shadow-2xl relative overflow-hidden">
           
           {/* Abstract Background Shapes */}
           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-500 rounded-full blur-[80px] opacity-50 mix-blend-overlay"></div>

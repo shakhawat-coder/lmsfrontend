@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("Refreshing session...");
       const session = await authApi.getCurrentUser();
-      console.log("Session fetch result:", session);
+      // console.log("Session fetch result:", session);
       
       if (session && session.user) {
         setUser(session.user);

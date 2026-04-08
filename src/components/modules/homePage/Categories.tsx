@@ -38,7 +38,7 @@ const Categories = () => {
                 const data = await categoryApi.getAll();
                 const items = Array.isArray(data) ? data : (data as any).data || [];
                 // Sort by book count descending if possible, or just limit to top 6
-                setCategories(items.slice(0, 6)); 
+                setCategories(items.slice(0, 4));
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
             } finally {
