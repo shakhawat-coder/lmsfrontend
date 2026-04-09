@@ -337,6 +337,33 @@ export const userApi = {
       body: JSON.stringify(adminData),
     });
   },
+
+  forgotPassword: async (email: string) => {
+    return fetchApi<{ message: string }>("/api/v1/users/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  verifyOtp: async (email: string, otp: string) => {
+    return fetchApi<{ success: boolean; message: string }>(
+      "/api/v1/users/verify-otp",
+      {
+        method: "POST",
+        body: JSON.stringify({ email, otp }),
+      },
+    );
+  },
+
+  resetPassword: async (data: any) => {
+    return fetchApi<{ success: boolean; message: string }>(
+      "/api/v1/users/reset-password",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
+    );
+  },
 };
 
 /**
@@ -633,6 +660,17 @@ export const chatApi = {
     return fetchApi<string>("/api/v1/chat/message", {
       method: "POST",
       body: JSON.stringify({ message, history }),
+    });
+  },
+};
+
+/**
+ * Statistics API Endpoints
+ */
+export const statisticsApi = {
+  get: async () => {
+    return fetchApi<{ totalBooks: number; activeMembers: number; premiumMembers: number }>("/api/v1/statistics", {
+      method: "GET",
     });
   },
 };

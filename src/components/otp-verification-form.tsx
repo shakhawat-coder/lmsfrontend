@@ -21,11 +21,15 @@ import Link from "next/link";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { userApi } from "@/lib/api";
+import { toast } from "sonner";
 
 const otpSchema = z.object({
-  otp: z.string().length(6, "Please enter all 6 digits").regex(/^\d+$/, "OTP must contain only numbers"),
+  otp: z
+    .string()
+    .length(6, "Please enter all 6 digits")
+    .regex(/^\d+$/, "OTP must contain only numbers"),
 });
-
 
 export function OTPVerificationForm({
   className,
@@ -35,6 +39,7 @@ export function OTPVerificationForm({
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -60,7 +65,10 @@ export function OTPVerificationForm({
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -68,41 +76,73 @@ export function OTPVerificationForm({
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const data = e.clipboardData.getData("text").replace(/\D/g, "").substring(0, 6);
+    const data = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .substring(0, 6);
     if (!data) return;
 
     const newOtp = [...otp];
     for (let i = 0; i < data.length; i++) {
-        newOtp[i] = data[i];
+      newOtp[i] = data[i];
     }
     setOtp(newOtp);
-    
+
     // Focus the last input or the next one
     const nextIndex = Math.min(data.length, 5);
     inputRefs.current[nextIndex]?.focus();
   };
 
+  const handleResend = async () => {
+    const email = localStorage.getItem("reset_email");
+    if (!email) {
+      toast.error("Email not found. Please try again from forgot password page.");
+      router.push("/forgot-password");
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const response = await userApi.forgotPassword(email);
+      toast.success(response.message || "OTP resent successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend OTP. Please try again.");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpString = otp.join("");
-    
+
     const result = otpSchema.safeParse({ otp: otpString });
-    
+
     if (!result.success) {
       setError(result.error.issues[0].message);
       return;
     }
 
+    const email = localStorage.getItem("reset_email");
+    if (!email) {
+      toast.error("Email not found. Please try again from forgot password page.");
+      router.push("/forgot-password");
+      return;
+    }
+
     setIsSubmitting(true);
 
-    
-    // Simulate API call
-    console.log("OTP submitted:", otpString);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    
-    // Redirect to reset password
-    router.push("/reset-password");
+    try {
+      const response = await userApi.verifyOtp(email, otpString);
+      localStorage.setItem("reset_otp", otpString);
+      toast.success(response.message || "OTP verified!");
+      router.push("/reset-password");
+    } catch (err: any) {
+      setError(err.message || "Invalid or expired OTP");
+      toast.error(err.message || "Invalid or expired OTP");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -147,8 +187,13 @@ export function OTPVerificationForm({
                 </Button>
                 <div className="text-center text-sm text-muted-foreground">
                   Didn&apos;t receive any code?{" "}
-                  <button type="button" className="text-primary hover:underline font-medium">
-                    Resend
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={isResending || isSubmitting}
+                    className="text-primary hover:underline font-medium disabled:opacity-50"
+                  >
+                    {isResending ? "Resending..." : "Resend"}
                   </button>
                 </div>
                 <FieldDescription className="text-center">

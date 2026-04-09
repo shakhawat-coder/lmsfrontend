@@ -20,7 +20,8 @@ BookNest is a modern, high-performance Library Management System designed to pro
   - **Member Management:** Track user roles and membership statuses.
 - **Responsive Design:** Fully optimized for mobile, tablet, and desktop viewing.
 - **Dark Mode Support:** Sleek UI that respects user system preferences.
-
+- **Password Reset:** Secure password reset functionality.
+- **AI Chatbot:** AI-powered chatbot for book recommendations and queries.
 ## 🛠️ Technologies Used
 - **Framework:** Next.js 15+ (App Router)
 - **Language:** TypeScript
@@ -29,14 +30,14 @@ BookNest is a modern, high-performance Library Management System designed to pro
 - **Animations:** Motion (Framer Motion)
 - **Icons:** Lucide React
 - **Carousel:** Swiper.js
-- **State Management:** React Hooks & Context API
+- **State Management:** React Hooks
 - **Auth Client:** Better-Auth Client
 
 ## ⚙️ Setup Instructions
 
 ### Prerequisites
 - Node.js (v18 or higher)
-- pnpm or npm
+- pnpm
 
 ### Installation
 1. Clone the repository:
@@ -47,7 +48,7 @@ BookNest is a modern, high-performance Library Management System designed to pro
 
 2. Install dependencies:
    ```bash
-   pnpm install
+   pnpm install 
    ```
 
 3. Configure Environment Variables:

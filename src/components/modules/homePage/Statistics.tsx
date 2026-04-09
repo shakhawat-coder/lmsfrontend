@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { BookOpen, Users, Star, Award } from 'lucide-react';
-import { bookApi, userApi, membershipApi } from '@/lib/api';
+import { statisticsApi } from '@/lib/api';
 
 export interface Statistic {
   id: number;
@@ -48,53 +48,30 @@ const AnimatedCounter: React.FC<{ value: number }> = ({ value }) => {
 };
 
 const Statistics = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [statsData, setStatsData] = useState({
-    totalBooks: 100,
-    activeMembers: 200,
-    premiumMembers: 160,
+    totalBooks: 0,
+    activeMembers: 0,
+    premiumMembers: 0,
     awardsWon: 12
   });
 
   useEffect(() => {
     const fetchRealData = async () => {
       try {
-        const normalize = (res: any) => Array.isArray(res) ? res : (res?.data || []);
-        
-        // Fetch books (usually public)
-        try {
-          const booksRes = await bookApi.getAll({ limit: 1 }); // Just need the meta total
-          if (booksRes && (booksRes as any).meta) {
-            setStatsData(prev => ({ ...prev, totalBooks: (booksRes as any).meta.total }));
-          } else {
-            const books = normalize(booksRes);
-            if (books.length > 0) {
-              setStatsData(prev => ({ ...prev, totalBooks: books.length }));
-            }
-          }
-        } catch (e) { console.warn("Failed to fetch books for stats", e); }
-
-        // Fetch users (might be restricted)
-        try {
-          const usersRes = await userApi.getAll();
-          const users = normalize(usersRes);
-          const activeUsers = users.filter((u: any) => u.status === 'ACTIVE').length;
-          if (activeUsers > 0) {
-            setStatsData(prev => ({ ...prev, activeMembers: activeUsers }));
-          }
-        } catch (e) { console.warn("Failed to fetch users for stats", e); }
-
-        // Fetch memberships (might be restricted)
-        try {
-          const membershipsRes = await membershipApi.getAll();
-          const memberships = normalize(membershipsRes);
-          const activeMemberships = memberships.filter((m: any) => m.status === 'ACTIVE').length;
-          if (activeMemberships > 0) {
-            setStatsData(prev => ({ ...prev, premiumMembers: activeMemberships }));
-          }
-        } catch (e) { console.warn("Failed to fetch memberships for stats", e); }
-
+        const stats = await statisticsApi.get();
+        if (stats) {
+          setStatsData(prev => ({
+            ...prev,
+            totalBooks: stats.totalBooks || prev.totalBooks,
+            activeMembers: stats.activeMembers || prev.activeMembers,
+            premiumMembers: stats.premiumMembers || prev.premiumMembers,
+          }));
+        }
       } catch (error) {
         console.error("Error fetching statistics:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -163,28 +140,38 @@ const Statistics = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={stat.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-card rounded-2xl p-8 border border-border shadow-md hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group"
-              >
-                <div className={`w-16 h-16 ${stat.bgColor} ${stat.color} rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300`}>
-                  <Icon className="w-8 h-8" />
-                </div>
-                <h3 className="text-4xl font-extrabold text-foreground mb-2 flex items-center whitespace-nowrap">
-                  <AnimatedCounter value={stat.value} />
-                  <span className={`ml-1 ${stat.color}`}>{stat.suffix}</span>
-                </h3>
-                <p className="text-muted-foreground font-medium uppercase tracking-wider text-sm">{stat.title}</p>
-              </motion.div>
-            );
-          })}
+          {isLoading ? (
+            [1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-card rounded-2xl p-8 border border-border flex flex-col items-center text-center animate-pulse">
+                <div className="w-16 h-16 bg-muted rounded-2xl mb-6"></div>
+                <div className="h-10 w-24 bg-muted rounded-xl mb-3"></div>
+                <div className="h-4 w-32 bg-muted rounded-full"></div>
+              </div>
+            ))
+          ) : (
+            stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-card rounded-2xl p-8 border border-border shadow-md hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group"
+                >
+                  <div className={`w-16 h-16 ${stat.bgColor} ${stat.color} rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300`}>
+                    <Icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-4xl font-extrabold text-foreground mb-2 flex items-center whitespace-nowrap">
+                    <AnimatedCounter value={stat.value} />
+                    <span className={`ml-1 ${stat.color}`}>{stat.suffix}</span>
+                  </h3>
+                  <p className="text-muted-foreground font-medium uppercase tracking-wider text-sm">{stat.title}</p>
+                </motion.div>
+              );
+            })
+          )}
         </div>
       </div>
     </section>

@@ -28,9 +28,37 @@ const BlogsPage = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-12 h-12 text-blue-600 animate-spin opacity-20" />
-                <p className="font-bold text-gray-400 uppercase tracking-widest text-sm">Discovering Stories...</p>
+            <div className="min-h-screen bg-background animate-pulse">
+                {/* Header Skeleton */}
+                <section className="pt-32 pb-20 bg-background border-b border-border">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-4xl space-y-6">
+                            <div className="h-6 w-32 bg-muted rounded-full" />
+                            <div className="h-16 md:h-20 w-3/4 bg-muted rounded-3xl" />
+                            <div className="h-8 w-2/3 bg-muted rounded-xl" />
+                            <div className="h-8 w-1/2 bg-muted rounded-xl" />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Grid Skeleton */}
+                <section className="py-20">
+                    <div className="container mx-auto px-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <div key={i} className="bg-card rounded-3xl overflow-hidden border border-border h-[500px] flex flex-col">
+                                    <div className="h-64 bg-muted w-full" />
+                                    <div className="p-10 flex flex-col flex-1 space-y-6">
+                                        <div className="h-4 w-32 bg-muted rounded-full" />
+                                        <div className="h-8 w-full bg-muted rounded-xl" />
+                                        <div className="h-8 w-3/4 bg-muted rounded-xl" />
+                                        <div className="h-4 w-full bg-muted rounded-md mt-auto" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
             </div>
         );
     }
@@ -41,15 +69,8 @@ const BlogsPage = () => {
             <section className="pt-32 pb-20 bg-background border-b border-border">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider mb-6"
-                        >
-                            <BookOpen className="w-4 h-4" />
-                            <span>Library Journal</span>
-                        </motion.div>
-                        <motion.h1 
+
+                        <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
@@ -57,7 +78,7 @@ const BlogsPage = () => {
                         >
                             News & <span className="text-blue-600 dark:text-blue-400">Insights</span>
                         </motion.h1>
-                        <motion.p 
+                        <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
@@ -91,9 +112,9 @@ const BlogsPage = () => {
                                 >
                                     <Link href={`/blogs/${blog.id}`} className="block h-64 relative overflow-hidden">
                                         {blog.image ? (
-                                            <img 
-                                                src={blog.image} 
-                                                alt={blog.title} 
+                                            <img
+                                                src={blog.image}
+                                                alt={blog.title}
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
                                         ) : (
@@ -107,7 +128,7 @@ const BlogsPage = () => {
                                             </span>
                                         </div>
                                     </Link>
-                                    
+
                                     <div className="p-10 flex flex-col flex-1">
                                         <div className="flex items-center gap-6 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">
                                             <div className="flex items-center gap-2">
@@ -119,18 +140,18 @@ const BlogsPage = () => {
                                                 {blog.author}
                                             </div>
                                         </div>
-                                        
+
                                         <h2 className="text-2xl font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-6 leading-snug">
                                             <Link href={`/blogs/${blog.id}`}>{blog.title}</Link>
                                         </h2>
-                                        
+
                                         <p className="text-muted-foreground line-clamp-3 mb-8 font-medium leading-relaxed">
                                             {blog.content.replace(/<[^>]*>/g, '')}
                                         </p>
-                                        
+
                                         <div className="mt-auto pt-8 border-t border-border flex items-center justify-between">
-                                            <Link 
-                                                href={`/blogs/${blog.id}`} 
+                                            <Link
+                                                href={`/blogs/${blog.id}`}
                                                 className="inline-flex items-center gap-2 font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
                                             >
                                                 Read full story

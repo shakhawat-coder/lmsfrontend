@@ -22,6 +22,8 @@ import Link from "next/link";
 import { z } from "zod";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { userApi } from "@/lib/api";
+import { toast } from "sonner";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -37,7 +39,9 @@ export function ForgotPasswordForm({
   const [formData, setFormData] = useState<ForgotPasswordFormData>({
     email: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof ForgotPasswordFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ForgotPasswordFormData, string>>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +59,9 @@ export function ForgotPasswordForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const result = forgotPasswordSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const fieldErrors: any = {};
       result.error.issues.forEach((err) => {
@@ -70,13 +74,25 @@ export function ForgotPasswordForm({
       return;
     }
 
-    // Simulate API call
-    console.log("Forgot password submitted:", result.data);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    
-    // Redirect to OTP verification
-    router.push("/otp-verification");
+    try {
+      console.log("Initiating forgot password for:", result.data.email);
+      const response = await userApi.forgotPassword(result.data.email);
+      
+      // Store in localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("reset_email", result.data.email);
+      }
+      
+      toast.success("OTP sent! Please check your email.");
+      
+      // Navigate to OTP verification page
+      router.push("/otp-verification");
+    } catch (err: any) {
+      console.error("Forgot password submission failed:", err);
+      toast.error(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

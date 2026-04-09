@@ -116,7 +116,7 @@ const ContactPage = () => {
     <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Header */}
       <section className="bg-slate-50 dark:bg-zinc-900/20 py-20 border-b border-gray-100 dark:border-zinc-800">
-        <div className="container px-4 text-center">
+        <div className="container px-4 mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -135,7 +135,7 @@ const ContactPage = () => {
         </div>
       </section>
 
-      <section className="py-24 container px-4">
+      <section className="py-24 mx-auto container px-4">
         <div className="grid lg:grid-cols-12 gap-12">
           {/* Contact Information */}
           <motion.div

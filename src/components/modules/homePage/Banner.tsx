@@ -78,7 +78,7 @@ const Banner = () => {
     }
 
     return (
-        <div className="w-full h-[80vh] lg:min-h-150 relative group overflow-hidden">
+        <div className="w-full h-[70vh] lg:min-h-120 relative group overflow-hidden">
             < Swiper
                 spaceBetween={0}
                 effect={'fade'}
@@ -188,4 +188,4 @@ const Banner = () => {
     );
 };
 
-export default Banner;
+export default Banner;
