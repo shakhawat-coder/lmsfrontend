@@ -46,7 +46,7 @@ const Cta = () => {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               {!isLoading && !user && (
-                <Link href="/register">
+                <Link href="/signup">
                   <button className="w-full sm:w-auto px-8 py-4 cursor-pointer bg-white text-blue-700 font-bold rounded-xl text-lg hover:bg-blue-50 transition-all shadow-[0_4px_14px_0_rgba(255,255,255,0.39)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.23)] hover:-translate-y-1 transform duration-300 flex items-center justify-center gap-2">
                     Create Account <ArrowRight className="w-5 h-5" />
                   </button>

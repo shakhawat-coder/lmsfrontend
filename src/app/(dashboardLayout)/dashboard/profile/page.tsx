@@ -2,25 +2,25 @@
 
 import { useState, useRef } from "react";
 import { useAuth } from "@/providers/auth-provider";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
 } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  UserIcon, 
-  LockIcon, 
+import {
+  UserIcon,
+  LockIcon,
   CameraIcon,
   ShieldCheckIcon,
   Loader2Icon,
@@ -40,7 +40,7 @@ export default function ProfilePage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -121,12 +121,12 @@ export default function ProfilePage() {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("image", file);
-    
+
     try {
       await userApi.update(user.id, formData);
       toast.success("Profile picture updated!");
       // The auth-provider should ideally refresh the user session or the user can refresh
-      window.location.reload(); 
+      window.location.reload();
     } catch (error: any) {
       toast.error(error.message || "Failed to upload image.");
     } finally {
@@ -139,7 +139,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-[1100px] mx-auto space-y-10 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4 pt-10">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="space-y-2"
@@ -153,7 +153,7 @@ export default function ProfilePage() {
           </h1>
           <p className="text-slate-500 text-lg font-medium max-w-md">Update your professional identity and security parameters.</p>
         </motion.div>
-        
+
         <Badge className="px-6 py-2 rounded-full font-bold bg-slate-900 text-white shadow-xl shadow-slate-900/10">
           Rank: {user?.role}
         </Badge>
@@ -162,14 +162,14 @@ export default function ProfilePage() {
       <Tabs defaultValue="details" className="w-full">
         <div className="px-4">
           <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-slate-100 p-1.5 text-slate-500 shadow-inner">
-            <TabsTrigger 
-              value="details" 
+            <TabsTrigger
+              value="details"
               className="rounded-xl px-8 py-2.5 text-sm font-bold transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-lg"
             >
               <UserIcon className="w-4 h-4 mr-2" /> Personal Details
             </TabsTrigger>
-            <TabsTrigger 
-              value="security" 
+            <TabsTrigger
+              value="security"
               className="rounded-xl px-8 py-2.5 text-sm font-bold transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-lg"
             >
               <LockIcon className="w-4 h-4 mr-2" /> Security Shield
@@ -179,7 +179,7 @@ export default function ProfilePage() {
 
         <div className="mt-10 px-4">
           <TabsContent value="details" className="mt-0 outline-none">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               className="grid lg:grid-cols-12 gap-10 items-start"
@@ -198,21 +198,21 @@ export default function ProfilePage() {
                           </AvatarFallback>
                         </Avatar>
                       </div>
-                      
+
                       <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                         {isUploading ? (
-                           <Loader2Icon className="w-8 h-8 text-white animate-spin" />
-                         ) : (
-                           <CameraIcon className="w-8 h-8 text-white" />
-                         )}
+                        {isUploading ? (
+                          <Loader2Icon className="w-8 h-8 text-white animate-spin" />
+                        ) : (
+                          <CameraIcon className="w-8 h-8 text-white" />
+                        )}
                       </div>
-                      
-                      <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        onChange={handleFileChange} 
-                        className="hidden" 
-                        accept="image/*" 
+
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
                       />
                     </div>
 
@@ -222,24 +222,24 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 w-full grid grid-cols-2 gap-4">
-                       <div className="text-left space-y-1">
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Status</span>
-                          <p className="text-xs font-bold text-emerald-500 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
-                          </p>
-                       </div>
-                       <div className="text-left space-y-1">
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Member Since</span>
-                          <p className="text-xs font-bold text-slate-900 dark:text-white">2024</p>
-                       </div>
+                      <div className="text-left space-y-1">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Status</span>
+                        <p className="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
+                        </p>
+                      </div>
+                      <div className="text-left space-y-1">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Member Since</span>
+                        <p className="text-xs font-bold text-slate-900 dark:text-white">2024</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <div className="p-8 bg-blue-50 dark:bg-blue-950/20 rounded-[2.5rem] border border-blue-100 dark:border-blue-900/30">
-                   <p className="text-xs font-medium text-blue-700 dark:text-blue-400 leading-relaxed text-center italic">
-                     "Your profile image is visible to all administrators and will be used on your digital library card."
-                   </p>
+                  <p className="text-xs font-medium text-blue-700 dark:text-blue-400 leading-relaxed text-center italic">
+                    "Your profile image is visible to all administrators and will be used on your digital library card."
+                  </p>
                 </div>
               </div>
 
@@ -257,10 +257,10 @@ export default function ProfilePage() {
                           <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Full Identity</Label>
                           <div className="relative group">
                             <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                            <Input 
-                              id="name" 
-                              value={profileData.name} 
-                              onChange={(e) => setProfileData(p => ({...p, name: e.target.value}))}
+                            <Input
+                              id="name"
+                              value={profileData.name}
+                              onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))}
                               className="rounded-3xl py-8 px-14 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-100 transition-all font-bold text-lg"
                             />
                           </div>
@@ -269,18 +269,18 @@ export default function ProfilePage() {
                           <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">System Mail</Label>
                           <div className="relative">
                             <MailIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
-                            <Input 
-                              id="email" 
-                              value={profileData.email} 
-                              disabled 
+                            <Input
+                              id="email"
+                              value={profileData.email}
+                              disabled
                               className="rounded-3xl py-8 px-14 border-slate-100 bg-slate-100/30 opacity-100 cursor-not-allowed text-lg font-bold text-slate-400"
                             />
                           </div>
                         </div>
                       </div>
-                      
-                      <Button 
-                        disabled={isUpdating} 
+
+                      <Button
+                        disabled={isUpdating}
                         className="rounded-[2rem] py-8 px-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl shadow-2xl shadow-blue-500/20 active:scale-95 transition-all w-full md:w-auto"
                       >
                         {isUpdating ? (
@@ -301,9 +301,9 @@ export default function ProfilePage() {
 
           {/* Security Tab */}
           <TabsContent value="security" className="outline-none">
-            <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
               <Card className="rounded-[3rem] border-none shadow-3xl bg-white dark:bg-slate-900 overflow-hidden">
                 <CardHeader className="p-12 bg-slate-900 text-white border-none flex flex-row items-center justify-between">
@@ -312,55 +312,55 @@ export default function ProfilePage() {
                     <CardDescription className="text-slate-400 text-lg font-medium">Protect your portal access and sensitive data.</CardDescription>
                   </div>
                   <div className="hidden md:flex p-4 bg-white/10 rounded-[2rem] backdrop-blur-md border border-white/10">
-                     <ShieldCheckIcon className="w-10 h-10 text-white" />
+                    <ShieldCheckIcon className="w-10 h-10 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent className="p-12 space-y-16">
-                   <div className="max-w-2xl mx-auto py-8">
-                      <div className="space-y-10">
-                         <div className="space-y-2">
-                            <h4 className="font-black text-2xl text-slate-900 dark:text-white">Credentials Renewal</h4>
-                            <p className="text-sm font-medium text-slate-500 leading-relaxed">Update your access key to maintain high-level security profile.</p>
-                         </div>
-                         <form onSubmit={handleChangePassword} className="space-y-6">
-                            <Input 
-                              type="password" 
-                              placeholder="Current Secure Password" 
-                              value={passwordData.currentPassword}
-                              onChange={(e) => setPasswordData(p => ({ ...p, currentPassword: e.target.value }))}
-                              className="rounded-2xl py-8 px-8 bg-slate-50 dark:bg-slate-800 border-none font-bold placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 transition-all shadow-inner" 
-                            />
-                            <Input 
-                              type="password" 
-                              placeholder="New Encryption Key" 
-                              value={passwordData.newPassword}
-                              onChange={(e) => setPasswordData(p => ({ ...p, newPassword: e.target.value }))}
-                              className="rounded-2xl py-8 px-8 bg-slate-50 dark:bg-slate-800 border-none font-bold placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 transition-all shadow-inner" 
-                            />
-                            <Input 
-                              type="password" 
-                              placeholder="Confirm Encryption Key" 
-                              value={passwordData.confirmPassword}
-                              onChange={(e) => setPasswordData(p => ({ ...p, confirmPassword: e.target.value }))}
-                              className="rounded-2xl py-8 px-8 bg-slate-50 dark:bg-slate-800 border-none font-bold placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 transition-all shadow-inner" 
-                            />
-                            <Button 
-                              type="submit"
-                              disabled={isChangingPassword}
-                              className="w-full rounded-[2rem] py-8 text-xl font-black bg-slate-900 text-white shadow-2xl shadow-slate-900/20 active:translate-y-1 transition-all"
-                            >
-                              {isChangingPassword ? (
-                                <>
-                                  <Loader2Icon className="mr-3 h-6 w-6 animate-spin" />
-                                  Authorizing...
-                                </>
-                              ) : (
-                                <>Authorize Change</>
-                              )}
-                            </Button>
-                         </form>
+                  <div className="max-w-2xl mx-auto py-8">
+                    <div className="space-y-10">
+                      <div className="space-y-2">
+                        <h4 className="font-black text-2xl text-slate-900 dark:text-white">Credentials Renewal</h4>
+                        <p className="text-sm font-medium text-slate-500 leading-relaxed">Update your access key to maintain high-level security profile.</p>
                       </div>
-                   </div>
+                      <form onSubmit={handleChangePassword} className="space-y-6">
+                        <Input
+                          type="password"
+                          placeholder="Current Secure Password"
+                          value={passwordData.currentPassword}
+                          onChange={(e) => setPasswordData(p => ({ ...p, currentPassword: e.target.value }))}
+                          className="rounded-2xl py-8 px-8 bg-slate-50 dark:bg-slate-800 border-none font-bold placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 transition-all shadow-inner"
+                        />
+                        <Input
+                          type="password"
+                          placeholder="New Encryption Key"
+                          value={passwordData.newPassword}
+                          onChange={(e) => setPasswordData(p => ({ ...p, newPassword: e.target.value }))}
+                          className="rounded-2xl py-8 px-8 bg-slate-50 dark:bg-slate-800 border-none font-bold placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 transition-all shadow-inner"
+                        />
+                        <Input
+                          type="password"
+                          placeholder="Confirm Encryption Key"
+                          value={passwordData.confirmPassword}
+                          onChange={(e) => setPasswordData(p => ({ ...p, confirmPassword: e.target.value }))}
+                          className="rounded-2xl py-8 px-8 bg-slate-50 dark:bg-slate-800 border-none font-bold placeholder:text-slate-400 focus:ring-2 focus:ring-slate-900 transition-all shadow-inner"
+                        />
+                        <Button
+                          type="submit"
+                          disabled={isChangingPassword}
+                          className="w-full rounded-[2rem] py-8 text-xl font-black bg-slate-900 text-white shadow-2xl shadow-slate-900/20 active:translate-y-1 transition-all"
+                        >
+                          {isChangingPassword ? (
+                            <>
+                              <Loader2Icon className="mr-3 h-6 w-6 animate-spin" />
+                              Authorizing...
+                            </>
+                          ) : (
+                            <>Authorize Change</>
+                          )}
+                        </Button>
+                      </form>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>

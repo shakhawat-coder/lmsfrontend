@@ -4,25 +4,25 @@ import { useState } from "react";
 import { userApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
-import { 
-  Field, 
-  FieldLabel, 
-  FieldGroup, 
-  FieldError 
+import {
+  Field,
+  FieldLabel,
+  FieldGroup,
+  FieldError
 } from "@/components/ui/field";
-import { 
-  ShieldCheckIcon, 
-  UserPlusIcon, 
-  Loader2Icon, 
-  MailIcon, 
-  UserIcon, 
+import {
+  ShieldCheckIcon,
+  UserPlusIcon,
+  Loader2Icon,
+  MailIcon,
+  UserIcon,
   LockIcon,
   CheckCircleIcon
 } from "lucide-react";
@@ -83,7 +83,7 @@ export default function AddAdminPage() {
       setIsSuccess(true);
       toast.success("New admin created successfully!");
       setFormData({ name: "", email: "", password: "" });
-      
+
       // Navigate back after delay
       setTimeout(() => {
         router.push("/dashboard/users");
@@ -99,28 +99,28 @@ export default function AddAdminPage() {
   return (
     <div className="max-w-[1000px] mx-auto py-8 lg:p-12 space-y-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="space-y-1.5"
         >
           <div className="flex items-center gap-3">
-             <div className="p-2 bg-blue-100 rounded-lg">
-               <ShieldCheckIcon className="w-5 h-5 text-blue-600" />
-             </div>
-             <span className="text-blue-600 font-bold uppercase tracking-widest text-xs">Security Control</span>
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <ShieldCheckIcon className="w-5 h-5 text-blue-600" />
+            </div>
+            <span className="text-blue-600 font-bold uppercase tracking-widest text-xs">Security Control</span>
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight">Grant Administrative Rights</h1>
           <p className="text-muted-foreground text-lg">Create a new dashboard administrator for the LMS platform.</p>
         </motion.div>
-        
+
         <Button variant="outline" className="rounded-full px-6" onClick={() => router.back()}>
           Back to User List
         </Button>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-12 items-start">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -157,7 +157,7 @@ export default function AddAdminPage() {
           </div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
@@ -174,7 +174,7 @@ export default function AddAdminPage() {
             <CardContent className="p-10 pt-0">
               <AnimatePresence mode="wait">
                 {isSuccess ? (
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
@@ -202,9 +202,9 @@ export default function AddAdminPage() {
                         </FieldLabel>
                         <div className="relative group">
                           <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                          <Input 
-                            id="name" 
-                            placeholder="John Smith" 
+                          <Input
+                            id="name"
+                            placeholder="John Smith"
                             value={formData.name}
                             onChange={handleInputChange}
                             className="pl-12 py-7 rounded-2xl border-slate-200 dark:border-slate-800 bg-slate-50/50 focus:bg-white transition-all text-lg font-medium"
@@ -219,9 +219,9 @@ export default function AddAdminPage() {
                         </FieldLabel>
                         <div className="relative group">
                           <MailIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                          <Input 
-                            id="email" 
-                            placeholder="admin@booknest.com" 
+                          <Input
+                            id="email"
+                            placeholder="admin@booknest.com"
                             type="email"
                             value={formData.email}
                             onChange={handleInputChange}
@@ -237,9 +237,9 @@ export default function AddAdminPage() {
                         </FieldLabel>
                         <div className="relative group">
                           <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                          <Input 
-                            id="password" 
-                            placeholder="••••••••" 
+                          <Input
+                            id="password"
+                            placeholder="••••••••"
                             type="password"
                             value={formData.password}
                             onChange={handleInputChange}
@@ -249,9 +249,9 @@ export default function AddAdminPage() {
                         {errors.password && <FieldError errors={[{ message: errors.password }]} />}
                       </Field>
 
-                      <Button 
-                        type="submit" 
-                        size="lg" 
+                      <Button
+                        type="submit"
+                        size="lg"
                         disabled={isSubmitting}
                         className="w-full rounded-[1.5rem] py-8 text-xl font-bold bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 transition-all transform hover:-translate-y-0.5 active:scale-[0.98]"
                       >

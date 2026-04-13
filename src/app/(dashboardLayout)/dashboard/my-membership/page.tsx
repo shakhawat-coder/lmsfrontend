@@ -170,11 +170,6 @@ export default function MyMembershipPage() {
               <span className="text-xs text-muted-foreground italic">
                 Last updated: {new Date().toLocaleDateString()}
               </span>
-              <Link href="/catalog/categories#plans">
-                <Button variant="outline" className="gap-2 group/btn">
-                  Upgrade Plan <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
             </CardFooter>
           </Card>
 

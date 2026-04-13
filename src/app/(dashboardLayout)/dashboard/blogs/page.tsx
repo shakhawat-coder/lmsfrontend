@@ -110,7 +110,7 @@ export default function BlogsManagementPage() {
       </div>
 
       {/* Main Content Area */}
-      <Card className="border-none shadow-md overflow-hidden bg-white">
+      <Card className="border-none shadow-md overflow-hidden bg-card">
         <CardHeader className="bg-muted/30 pb-4">
           <CardTitle className="text-lg">Journal Inventory</CardTitle>
         </CardHeader>
@@ -129,7 +129,7 @@ export default function BlogsManagementPage() {
             </TableHeader>
             <TableBody>
               {blogs.length === 0 ? (
-                <TableRow>
+                <TableRow> 
                   <TableCell colSpan={7} className="h-32 text-center text-muted-foreground font-medium">
                     No articles found. Start writing your library's story today.
                   </TableCell>
@@ -158,15 +158,15 @@ export default function BlogsManagementPage() {
                         </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-bold text-[10px] gap-1 border-blue-200 text-blue-600 bg-blue-50">
+                      <Badge variant="primary" className="font-bold text-[10px] gap-1 uppercase tracking-wider">
                         <TagIcon className="w-2.5 h-2.5" />
                         {blog.category}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        variant={blog.published ? "success" : "outline"} 
-                        className={`text-[10px] font-bold ${blog.published ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-zinc-50 text-zinc-500 border-zinc-200"}`}
+                        variant={blog.published ? "success" : "secondary"} 
+                        className="text-[10px] font-bold uppercase tracking-wider"
                       >
                         {blog.published ? "PUBLISHED" : "DRAFT"}
                       </Badge>
@@ -198,8 +198,8 @@ export default function BlogsManagementPage() {
                                 This will permanently remove <span className="text-foreground font-black">"{blog.title}"</span> and all its associated data from our public records.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter className="mt-6 pt-4 border-t border-gray-100">
-                              <AlertDialogCancel className="rounded-xl border-none bg-zinc-100 hover:bg-zinc-200">Cancel</AlertDialogCancel>
+                            <AlertDialogFooter className="mt-6 pt-4">
+                              <AlertDialogCancel className="rounded-xl border-none">Cancel</AlertDialogCancel>
                               <AlertDialogAction 
                                 onClick={() => handleDelete(blog.id)}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl"

@@ -463,7 +463,6 @@ export default function DashboardPage() {
                 <TableHead className="pl-6">Asset Name</TableHead>
                 <TableHead>{isAdmin ? "Author" : "Borrow Date"}</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right pr-6">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -483,11 +482,6 @@ export default function DashboardPage() {
                     >
                       {isAdmin ? (item.availability ? "AVAILABLE" : "OUT") : "BORROWED"}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-right pr-6">
-                    <button className="text-xs text-primary font-semibold hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
-                      View details
-                    </button>
                   </TableCell>
                 </TableRow>
               ))}
